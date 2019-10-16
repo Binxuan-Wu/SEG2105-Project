@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "522353573251",
+    "firebase_url": "https://walk-in-clinic-project.firebaseio.com",
+    "project_id": "walk-in-clinic-project",
+    "storage_bucket": "walk-in-clinic-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522353573251:android:d88a9a2a310e2737788ab6",
+        "android_client_info": {
+          "package_name": "com.ysteimle.segproject.easywalkin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522353573251-i05p9kj5est5l8giikmi77ci5llo1qu8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-Vyjc0L7jLTrD5A6p88b-oBuy8ekKJfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522353573251-i05p9kj5est5l8giikmi77ci5llo1qu8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

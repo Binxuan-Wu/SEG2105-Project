@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Easy Walk-In</string>
+    <string name="LogInScreen_WelcomeMsg">Log in to Easy Walk-In</string>
+    <string name="LogInScreen_NewUserMsg">New to Easy Walk-In? Sign up.</string>
+    <string name="LogIn">Log in</string>
+    <string name="Password">Password</string>
+    <string name="Username">Username</string>
+    <string name="UsernameOrEmail">Username (Email)</string>
 </resources>
