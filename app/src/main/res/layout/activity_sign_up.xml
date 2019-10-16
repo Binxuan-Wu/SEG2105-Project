@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
+    tools:context=".SignUpActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/SignUpScreenWelcomeMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/SignUpScreen_WelcomeMsg"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/SignUpScreenAccountTypeDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/AccountType"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenAccountTypeSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenWelcomeMsg" />
+
+        <Spinner
+            android:id="@+id/SignUpScreenAccountTypeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/account_type_array"
+            android:prompt="@string/SignUpScreen_account_type_prompt"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenFirstNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenAccountTypeDescription" />
+
+        <EditText
+            android:id="@+id/SignUpScreenFirstNameEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/FirstName"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenLastNameEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenLastNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenFirstNameDescription" />
+
+        <TextView
+            android:id="@+id/SignUpScreenLastNameDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/LastName"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenLastNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenFirstNameEdit" />
+
+        <EditText
+            android:id="@+id/SignUpScreenLastNameEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/LastName"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenEmailEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenEmailEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenLastNameDescription" />
+
+        <TextView
+            android:id="@+id/SignUpScreenEmailDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Email_is_username"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenEmailEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenLastNameEdit" />
+
+        <EditText
+            android:id="@+id/SignUpScreenEmailEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/EmailAddress"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenAddressEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenAddressEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenEmailDescription" />
+
+        <TextView
+            android:id="@+id/SignUpScreenAddressDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/HomeAddress"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenAddressEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenEmailEdit" />
+
+        <EditText
+            android:id="@+id/SignUpScreenAddressEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/HomeAddress"
+            android:importantForAutofill="no"
+            android:inputType="textPostalAddress"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenPasswordEdit"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenPasswordEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenAddressDescription" />
+
+        <TextView
+            android:id="@+id/SignUpScreenFirstNameDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/FirstName"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenFirstNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenAccountTypeSpinner" />
+
+        <TextView
+            android:id="@+id/SignUpScreenPasswordDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Password_with_restrictions"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenPasswordEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenAddressEdit" />
+
+        <EditText
+            android:id="@+id/SignUpScreenPasswordEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/Password_case_sensitive"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName|textPassword"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenConfirmPasswordEdit"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenConfirmPasswordEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenPasswordDescription" />
+
+        <TextView
+            android:id="@+id/SignUpScreenConfirmPasswordDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ConfirmPassword"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenConfirmPasswordEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenPasswordEdit" />
+
+        <EditText
+            android:id="@+id/SignUpScreenConfirmPasswordEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="13"
+            android:hint="@string/Password_case_sensitive"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName|textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.449"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenConfirmPasswordDescription" />
+
+        <Button
+            android:id="@+id/SignUpButton"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@android:color/holo_green_dark"
+            android:text="@string/SignUp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpScreenConfirmPasswordEdit"
+            app:layout_constraintStart_toStartOf="@+id/SignUpScreenConfirmPasswordEdit"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpScreenConfirmPasswordEdit" />
+
+        <TextView
+            android:id="@+id/SignUpScreenPreviousUserMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:onClick="onClickPreviousUserMsg"
+            android:text="@string/SignUpScreen_PreviousUserMsg"
+            app:layout_constraintEnd_toEndOf="@+id/SignUpButton"
+            app:layout_constraintStart_toStartOf="@+id/SignUpButton"
+            app:layout_constraintTop_toBottomOf="@+id/SignUpButton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

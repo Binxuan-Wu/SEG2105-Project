@@ -6,4 +6,21 @@
     <string name="Password">Password</string>
     <string name="Username">Username</string>
     <string name="UsernameOrEmail">Username (Email)</string>
+    <string name="SignUpScreen_WelcomeMsg">Create a new account</string>
+    <string name="FirstName">First Name</string>
+    <string name="LastName">Last Name</string>
+    <string name="EmailAddress">Email Address</string>
+    <string name="Email_is_username">Email Address (will be your username)</string>
+    <string name="HomeAddress">Home Address</string>
+    <string name="ConfirmPassword">Confirm Password</string>
+    <string name="SignUp">Sign up</string>
+    <string name="SignUpScreen_PreviousUserMsg">Already have an account? Log in.</string>
+    <string name="Password_with_restrictions">Password (6 to 10 alphanumeric characters)</string>
+    <string name="Password_case_sensitive">Password (case sensitive)</string>
+    <string name="SignUpScreen_account_type_prompt">Select an account type</string>
+    <string name="AccountType">Type of account</string>
+    <string-array name="account_type_array">
+        <item>Patient</item>
+        <item>Clinic Employee</item>
+    </string-array>
 </resources>
