@@ -1,97 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/LogInScreenWelcomeMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/LogInScreen_WelcomeMsg"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        app:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@+id/LogInScreenUserNameDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.78" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/LogInScreenNewUserMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:onClick="onClickNewUserMsg"
-        android:text="@string/LogInScreen_NewUserMsg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
 
-    <Button
-        android:id="@+id/LogInButton"
-        style="@android:style/Widget.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_dark"
-        android:text="@string/LogIn"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/LogInScreenWelcomeMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:text="@string/LogInScreen_WelcomeMsg"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/LogInScreenPwdEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:hint="@string/Password"
-        android:importantForAutofill="no"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/LogInButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/LogInScreenNewUserMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:onClick="onClickNewUserMsg"
+            android:text="@string/LogInScreen_NewUserMsg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LogInButton" />
 
-    <TextView
-        android:id="@+id/LogInScreenPwdDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Password"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/LogInScreenPwdEdit"
-        app:layout_constraintStart_toStartOf="@+id/LogInScreenPwdEdit" />
+        <Button
+            android:id="@+id/LogInButton"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@android:color/holo_green_dark"
+            android:text="@string/LogIn"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LogInScreenPwdEdit" />
 
-    <EditText
-        android:id="@+id/LogInScreenUserNameEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:hint="@string/UsernameOrEmail"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName|textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/LogInScreenPwdDescription"
-        app:layout_constraintEnd_toEndOf="@+id/LogInScreenPwdEdit"
-        app:layout_constraintStart_toStartOf="@+id/LogInScreenPwdEdit" />
+        <EditText
+            android:id="@+id/LogInScreenPwdEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/Password"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LogInScreenPwdDescription" />
 
-    <TextView
-        android:id="@+id/LogInScreenUserNameDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Username"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/LogInScreenUserNameEdit"
-        app:layout_constraintStart_toStartOf="@+id/LogInScreenUserNameEdit" />
+        <TextView
+            android:id="@+id/LogInScreenPwdDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Password"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/LogInScreenPwdEdit"
+            app:layout_constraintTop_toBottomOf="@+id/LogInScreenUserNameEdit" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/LogInScreenUserNameEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/UsernameOrEmail"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName|textEmailAddress"
+            app:layout_constraintEnd_toEndOf="@+id/LogInScreenPwdEdit"
+            app:layout_constraintStart_toStartOf="@+id/LogInScreenPwdEdit"
+            app:layout_constraintTop_toBottomOf="@+id/LogInScreenUserNameDescription" />
+
+        <TextView
+            android:id="@+id/LogInScreenUserNameDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:text="@string/Username"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/LogInScreenUserNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/LogInScreenWelcomeMsg" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

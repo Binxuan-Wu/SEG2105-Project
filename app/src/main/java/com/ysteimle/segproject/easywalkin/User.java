@@ -1,38 +1,32 @@
 package com.ysteimle.segproject.easywalkin;
 
-public class User implements AppUser {
-    private UserProfile userProfile;
+public abstract class User implements AppUser {
+    String accountType;
+    String firstName;
+    String lastName;
+    String email;
+    String address;
+    String passwordHash;
+
+    // The account associated to this user. Patients will have a PatientAccount and Employees will
+    // have an EmployeeAccount
+    Account account;
 
     User() {}
-    User(String firstName, String lastName, String email, String address, String passwordHash) {
-        this.userProfile = new UserProfile(firstName, lastName, email, address, passwordHash);
+    User(String accountType) {
+        this.accountType = accountType;
     }
-
-    public UserProfile getUserProfile() { return userProfile; }
-    public void setUserProfile(String firstName, String lastName, String email, String address, String passwordHash) {
-        this.userProfile.setFirstName(firstName);
-        this.userProfile.setLastName(lastName);
-        this.userProfile.setEmail(email);
-        this.userProfile.setAddress(address);
-        this.userProfile.setPasswordHash(passwordHash);
-    }
-}
-
-class UserProfile {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String address;
-    private String passwordHash;
-
-    UserProfile() {}
-    UserProfile (String firstName, String lastName, String email, String address, String passwordHash) {
+    User(String accountType, String firstName, String lastName, String email, String address, String passwordHash) {
+        this.accountType = accountType;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.address = address;
         this.passwordHash = passwordHash;
     }
+
+    String getAccountType() { return accountType; }
+    void setAccountType(String accountType) { this.accountType = accountType; }
 
     String getFirstName() { return firstName; }
     void setFirstName(String firstName) { this.firstName = firstName; }
@@ -48,4 +42,7 @@ class UserProfile {
 
     String getPasswordHash() { return passwordHash; }
     void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    Account getAccount() { return account; }
+    void setAccount(Account account) { this.account = account; }
 }
