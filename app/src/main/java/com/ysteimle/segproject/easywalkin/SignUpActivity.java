@@ -98,7 +98,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             String passwordHash = hexHash(password);
             // Confirm hashing worked
             if (passwordHash.equals("Failure")) {
-                Toast.makeText(this, "Password Encryption Failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Password Hashing Failed", Toast.LENGTH_LONG).show();
                 return; // terminate since we did not manage to hash the password
             }
 
@@ -106,14 +106,15 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             if (accountType.equals("Employee")) {
                 final Employee mEmployee = new Employee(firstName, lastName, email, address, passwordHash);
                 // Register user in Firebase Authentication Scheme
-                // If successful, add user to database in Employee directory
-                mAuth.createUserWithEmailAndPassword(email,passwordHash).addOnCompleteListener(this,
+                mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this,
                         new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // If sign up successful, add user to database
-                                    mDatabase.getReference("Employee")
+                                    // If sign up successful, add key value pair (Uid, "Employee") to AccountType list in database
+                                    mDatabase.getReference("Account Types").child(mAuth.getCurrentUser().getUid()).setValue("Employee");
+                                    // Also add employee object to "Employees" directory in database
+                                    mDatabase.getReference("Employees")
                                             .child(mAuth.getCurrentUser().getUid()).setValue(mEmployee) // Key: currentUser.Uid, Value: Employee Object
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
@@ -121,8 +122,8 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                                                     if (task.isSuccessful()) {
                                                         // if adding to database successful, display success message,
                                                         // finish activity, and go to personal profile activity
-                                                        Toast.makeText(getApplicationContext(),"Successfully signed up.", Toast.LENGTH_LONG).show();
-                                                        finish(); // return to log in activity
+                                                        finish();
+                                                        startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
                                                     }
                                                     else {
                                                         // if adding to database failed, show error message
@@ -142,44 +143,40 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                 // By default, user is a patient.
                 final Patient mPatient = new Patient(firstName, lastName, email, address, passwordHash);
                 // Register user in Firebase Authentication Scheme
-                // If successful, add user to database in Patient directory
-                mAuth.createUserWithEmailAndPassword(email,passwordHash).addOnCompleteListener(this,
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
                         new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // If sign up successful, add user to database
-                                    mDatabase.getReference("Patient")
-                                            .child(mAuth.getCurrentUser().getUid()).setValue(mPatient) // Key: currentUser.Uid, Value: Patient Object
+                                    // If sign up successful, add key value pair (Uid, "Patient") to AccountType list in database
+                                    mDatabase.getReference("Account Types").child(mAuth.getCurrentUser().getUid()).setValue("Patient");
+                                    // Also add Patient object to "Patients" directory in database
+                                    mDatabase.getReference("Patients")
+                                            .child(mAuth.getCurrentUser().getUid()).setValue(mPatient) // Key: currentUser.Uid, Value: Employee Object
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         // if adding to database successful, display success message,
                                                         // finish activity, and go to personal profile activity
-                                                        Toast.makeText(getApplicationContext(),"Successfully signed up.", Toast.LENGTH_LONG).show();
-                                                        finish(); // return to log in activity
-                                                    }
-                                                    else {
+                                                        finish();
+                                                        startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
+                                                    } else {
                                                         // if adding to database failed, show error message
                                                         Toast.makeText(getApplicationContext(), "Firebase Database Error", Toast.LENGTH_LONG).show();
                                                     }
                                                 }
                                             });
-                                }
-                                else {
+                                } else {
                                     // If sign up failed, show error message
                                     Toast.makeText(getApplicationContext(), "Firebase Authentication Error", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
             }
-            else {
-                Toast.makeText(this, "Unknown account type", Toast.LENGTH_LONG).show();
-                // Terminate since something went wrong with the account type selection
-            }
         }
     }
+
 
     public boolean validSignUpScreenInput(String accountType, String firstName, String lastName,
                                           String email, String address, String password,

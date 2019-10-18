@@ -19,6 +19,9 @@
     <string name="Password_case_sensitive">Password (case sensitive)</string>
     <string name="SignUpScreen_account_type_prompt">Select an account type</string>
     <string name="AccountType">Type of account</string>
+    <string name="PersonalProfile">Personal Profile</string>
+    <string name="Profile_AccountDescription">Type of account:</string>
+    <string name="LogOut">Log out</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>
