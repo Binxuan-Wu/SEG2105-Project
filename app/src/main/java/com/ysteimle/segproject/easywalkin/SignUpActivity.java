@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.nio.charset.StandardCharsets;
@@ -36,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
     // Variables for the Firebase Authentication and Database
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
+    DatabaseReference mReference;
 
 
     @Override
@@ -50,6 +53,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
         // Firebase Authentication and Database Instances
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        mReference = mDatabase.getReference();
 
         // Connect variables defined above to correct layout elements on the SignUp Screen
         setUpVariables();
@@ -94,6 +98,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
         // Verify that all fields contain appropriate input
         if (validSignUpScreenInput(accountType, firstName, lastName, email, address, password,
                 confirmpassword)) {
+
             // Hash password
             String passwordHash = hexHash(password);
             // Confirm hashing worked
@@ -102,81 +107,48 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                 return; // terminate since we did not manage to hash the password
             }
 
-            // Create appropriate User object
-            if (accountType.equals("Employee")) {
-                final Employee mEmployee = new Employee(firstName, lastName, email, address, passwordHash);
-                // Register user in Firebase Authentication Scheme
-                mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this,
-                        new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // If sign up successful, add key value pair (Uid, "Employee") to AccountType list in database
-                                    mDatabase.getReference("Account Types").child(mAuth.getCurrentUser().getUid()).setValue("Employee");
-                                    // Also add employee object to "Employees" directory in database
-                                    mDatabase.getReference("Employees")
-                                            .child(mAuth.getCurrentUser().getUid()).setValue(mEmployee) // Key: currentUser.Uid, Value: Employee Object
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        // if adding to database successful, display success message,
-                                                        // finish activity, and go to personal profile activity
-                                                        finish();
-                                                        startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
-                                                    }
-                                                    else {
-                                                        // if adding to database failed, show error message
-                                                        Toast.makeText(getApplicationContext(), "Firebase Database Error", Toast.LENGTH_LONG).show();
-                                                    }
-                                                }
-                                            });
-                                }
-                                else {
-                                    // If sign up failed, show error message
-                                    Toast.makeText(getApplicationContext(), "Firebase Authentication Error", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-            }
-            else if (accountType.equals("Patient")) {
-                // By default, user is a patient.
-                final Patient mPatient = new Patient(firstName, lastName, email, address, passwordHash);
-                // Register user in Firebase Authentication Scheme
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
-                        new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // If sign up successful, add key value pair (Uid, "Patient") to AccountType list in database
-                                    mDatabase.getReference("Account Types").child(mAuth.getCurrentUser().getUid()).setValue("Patient");
-                                    // Also add Patient object to "Patients" directory in database
-                                    mDatabase.getReference("Patients")
-                                            .child(mAuth.getCurrentUser().getUid()).setValue(mPatient) // Key: currentUser.Uid, Value: Employee Object
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        // if adding to database successful, display success message,
-                                                        // finish activity, and go to personal profile activity
-                                                        finish();
-                                                        startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
-                                                    } else {
-                                                        // if adding to database failed, show error message
-                                                        Toast.makeText(getApplicationContext(), "Firebase Database Error", Toast.LENGTH_LONG).show();
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    // If sign up failed, show error message
-                                    Toast.makeText(getApplicationContext(), "Firebase Authentication Error", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-            }
+            // Create user object
+            final User mUser = new User(accountType, firstName, lastName, email, address, passwordHash);
+
+            // Create Authentication Success Verification On Complete Listener
+            OnCompleteListener<AuthResult> authResultOnCompleteListener = new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        //Toast.makeText(getApplicationContext(), "Successfully signed up user to Authentication Scheme", Toast.LENGTH_LONG).show();
+                        // Get currently signed in user
+                        FirebaseUser currentFirebaseUser = mAuth.getCurrentUser();
+
+                        // Add User Info to database
+                        addUserInfoToDatabase(currentFirebaseUser,mUser);
+
+                        // Go to Personal Profile Activity
+                        startActivity(new Intent(SignUpActivity.this, PersonalProfileActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error: could not sign up user to Authentication Scheme", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+
+            // Register user in Firebase Authentication Scheme
+            // This should automatically log the user in
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, authResultOnCompleteListener);
+
         }
     }
 
+    public void addUserInfoToDatabase(FirebaseUser firebaseUser, User user) {
+        if (firebaseUser != null) {
+            mReference.child("AccountTypes").child(firebaseUser.getUid()).setValue(user.accountType);
+            String databasePath = user.accountType.trim() + "List";
+            mReference.child(databasePath).child(firebaseUser.getUid()).setValue(user);
+            Toast.makeText(getApplicationContext(), "Successfully added user info to database", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Error: Could not add user info to database", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public boolean validSignUpScreenInput(String accountType, String firstName, String lastName,
                                           String email, String address, String password,

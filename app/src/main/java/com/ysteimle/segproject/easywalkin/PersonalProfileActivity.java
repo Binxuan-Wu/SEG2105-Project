@@ -64,6 +64,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(this, MainActivity.class));
         }
+        /*
         else {
             // If a user is logged in, find out the type of the user.
             mDatabase.child("Account Types").child(mUser.getUid())
@@ -161,6 +162,8 @@ public class PersonalProfileActivity extends AppCompatActivity {
             }
 
         }
+
+         */
 
     }
 
