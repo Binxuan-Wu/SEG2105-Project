@@ -37,8 +37,8 @@ public class PersonalProfileActivity extends AppCompatActivity {
     private TextView ProfileAddressTextView;
     //private TextView ProfileAddressLine2View; // Might not be necessary if text wraps in a TextView (i.e. if text goes onto a second line if too long for the screen)
 
-    String accountType;
-    String databasePath;
+    //String accountType;
+    //String databasePath;
     String firstName;
     String lastName;
     String email;
@@ -65,11 +65,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
         ProfileAddressTextView = findViewById(R.id.ProfileAddressView);
         //profileAddressLine2View = findViewById(R.id.ProfileAddressLine2View);
 
-   // }
-
-   // @Override
-   // public void onStart () {
-       // super.onStart();
         // If no user is logged in, this Activity should not be displayed, and we should return to
         // the Log in screen (Main Activity)
         if (mUser == null) {

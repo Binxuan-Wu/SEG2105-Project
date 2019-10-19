@@ -1,5 +1,5 @@
 package com.ysteimle.segproject.easywalkin;
 
-class EmployeeAccount implements Account {
+class EmployeeAccount implements UserAccount {
     // Employee account functionality to be implemented later
 }
