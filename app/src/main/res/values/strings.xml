@@ -15,7 +15,7 @@
     <string name="ConfirmPassword">Confirm Password</string>
     <string name="SignUp">Sign up</string>
     <string name="SignUpScreen_PreviousUserMsg">Already have an account? Log in.</string>
-    <string name="Password_with_restrictions">Password (6 to 10 alphanumeric characters)</string>
+    <string name="Password_with_restrictions">Password (6 to 12 characters)</string>
     <string name="Password_case_sensitive">Password (case sensitive)</string>
     <string name="SignUpScreen_account_type_prompt">Select an account type</string>
     <string name="AccountType">Type of account</string>

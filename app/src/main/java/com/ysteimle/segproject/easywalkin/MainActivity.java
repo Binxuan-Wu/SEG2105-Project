@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +29,19 @@ public class MainActivity extends AppCompatActivity {
 
         emailEdit = findViewById(R.id.LogInScreenUserNameEdit);
         passwordEdit = findViewById(R.id.LogInScreenPwdEdit);
+
+        // Initialise Firebase Authentication
+        mAuth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Check if there is a signed in user
+        if (mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
+        }
     }
 
     public void onClickNewUserMsg (View view) {
@@ -43,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please enter your email address and password", Toast.LENGTH_LONG).show();
         }
-        else {
+        else if (validLogInInput(email, password)) {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                //Toast.makeText(getApplicationContext(), "Successfully logged in", Toast.LENGTH_LONG).show();
                                 // if task successful, go to Personal Profile Activity
-                                finish();
                                 startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
                             }
                             else {
@@ -59,5 +73,28 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         }
+        else {
+            Toast.makeText(getApplicationContext(), "Error: Log in failed.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public boolean validLogInInput(String email, String password) {
+        boolean validInput = true;
+        StringBuilder errorMsg = new StringBuilder();
+        errorMsg.append("Error: ");
+        // Email validation
+        if (!email.contains("@") || !email.contains(".") || email.length() < 6) {
+            validInput = false;
+            errorMsg.append("Invalid email. ");
+        }
+        // password validation
+        if (password.length() < 6 || password.length() > 12) {
+            validInput = false;
+            errorMsg.append("Invalid password. ");
+        }
+        if (!validInput) {
+            Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+        }
+        return validInput;
     }
 }

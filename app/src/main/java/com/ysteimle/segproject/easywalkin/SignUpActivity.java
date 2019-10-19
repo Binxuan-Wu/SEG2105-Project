@@ -1,8 +1,5 @@
 package com.ysteimle.segproject.easywalkin;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +8,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -143,7 +143,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             mReference.child("AccountTypes").child(firebaseUser.getUid()).setValue(user.accountType);
             String databasePath = user.accountType.trim() + "List";
             mReference.child(databasePath).child(firebaseUser.getUid()).setValue(user);
-            Toast.makeText(getApplicationContext(), "Successfully added user info to database", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Successfully added user info to database", Toast.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(getApplicationContext(), "Error: Could not add user info to database", Toast.LENGTH_LONG).show();
@@ -153,8 +153,79 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
     public boolean validSignUpScreenInput(String accountType, String firstName, String lastName,
                                           String email, String address, String password,
                                           String confirmpassword) {
-        // To be implemented
-        return true;
+        boolean validInput = true;
+        StringBuilder errorMsg = new StringBuilder();
+        errorMsg.append("Error: ");
+        // Verify accountType
+        if (!(accountType.equals("Patient") || accountType.equals("Employee"))) {
+            validInput = false;
+            errorMsg.append("Invalid account type. ");
+        }
+        // unicode regular expression to validate names
+        // Must start with uppercase letter character, can contain spaces, hyphens, accents
+        String nameRegex = "^\\p{L}+[\\p{L}\\p{Z}\\p{Pd}\\p{Mn}\\p{Mc}]{0,24}";
+        if (firstName.isEmpty() || !firstName.matches(nameRegex)) {
+            validInput = false;
+            errorMsg.append("Invalid first name. ");
+        }
+        if (lastName.isEmpty() || !lastName.matches(nameRegex)) {
+            validInput = false;
+            errorMsg.append("Invalid last name. ");
+        }
+
+        // an address must be between 4 and 50 characters
+        if (address.isEmpty() || address.length() < 4 || address.length() > 50) {
+            validInput = false;
+            errorMsg.append("Invalid address. ");
+        }
+
+        // Email validation
+        /*
+        boolean emailIsValid = false;
+        if (email.contains("@")) {
+            if (email.indexOf("@") == email.lastIndexOf("@") && email.indexOf("@") > 0 && email.indexOf("@") < email.length() - 1) {
+                String domains = email.split("@",-2)[1];
+                if (domains.contains(".")) {
+                    String[] domainList = domains.split(".",-2);
+                    int emptydomainctr = 0;
+                    for (String domain : domainList) {
+                        if (domain.isEmpty()) {
+                            emptydomainctr++;
+                        }
+                    }
+                    if (emptydomainctr == 0) {
+                        emailIsValid = true;
+                    }
+                }
+            }
+        }
+        if (!emailIsValid) {
+            validInput = false;
+            errorMsg.append("Invalid email. ");
+        }
+        */
+
+        // Email validation
+        if (!email.contains("@") || !email.contains(".") || email.length() < 6) {
+            validInput = false;
+            errorMsg.append("Invalid email. ");
+        }
+
+        // Password validation
+        if (!password.equals(confirmpassword)) {
+            validInput = false;
+            errorMsg.append("Confirm Password must match Password. ");
+        } else {
+            if (password.isEmpty() || password.length() < 6 || password.length() > 12) {
+                validInput = false;
+                errorMsg.append("Password must be between 6 and 12 characters. ");
+            }
+        }
+
+        if (!validInput) {
+            Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+        }
+        return validInput;
     }
 
     // Method that takes a plaintext String as an input and heturns a String containing the hexadecimal
