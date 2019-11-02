@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
+    tools:context=".AdminAccountActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/AdminAccountTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/Admin_Account"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/AdminAccManageServices"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/holo_orange_light"
+            android:onClick="manageServices"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Manage_Services"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AdminAccountTitle" />
+
+        <Button
+            android:id="@+id/AdminAccManageClinics"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/holo_orange_light"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Manage_Clinics"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="@+id/AdminAccManageServices"
+            app:layout_constraintStart_toStartOf="@+id/AdminAccManageServices"
+            app:layout_constraintTop_toBottomOf="@+id/AdminAccManageServices" />
+
+        <Button
+            android:id="@+id/AdminAccManagePatients"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/holo_orange_light"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Manage_Patients"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="@+id/AdminAccManageClinics"
+            app:layout_constraintStart_toStartOf="@+id/AdminAccManageClinics"
+            app:layout_constraintTop_toBottomOf="@+id/AdminAccManageClinics" />
+
+        <Button
+            android:id="@+id/AdminAccGoToProfile"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="goToProfile"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Go_To_Profile"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="@+id/AdminAccManagePatients"
+            app:layout_constraintStart_toStartOf="@+id/AdminAccManagePatients"
+            app:layout_constraintTop_toBottomOf="@+id/AdminAccManagePatients" />
+
+        <Button
+            android:id="@+id/AdminAccLogOut"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/holo_green_dark"
+            android:onClick="logOut"
+            android:text="@string/LogOut"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/AdminAccGoToProfile"
+            app:layout_constraintStart_toStartOf="@+id/AdminAccGoToProfile"
+            app:layout_constraintTop_toBottomOf="@+id/AdminAccGoToProfile" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

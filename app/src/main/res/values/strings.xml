@@ -22,6 +22,12 @@
     <string name="PersonalProfile">Personal Profile</string>
     <string name="Profile_AccountDescription">Type of account:</string>
     <string name="LogOut">Log out</string>
+    <string name="Go_To_Account">Go to Account</string>
+    <string name="Admin_Account">Admin Account</string>
+    <string name="Manage_Services">Manage Services</string>
+    <string name="Manage_Clinics">Manage Clinics and Employees</string>
+    <string name="Manage_Patients">Manage Patients</string>
+    <string name="Go_To_Profile">Go to Personal Profile</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>

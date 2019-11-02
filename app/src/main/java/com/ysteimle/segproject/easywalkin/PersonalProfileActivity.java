@@ -37,12 +37,12 @@ public class PersonalProfileActivity extends AppCompatActivity {
     private TextView ProfileAddressTextView;
     //private TextView ProfileAddressLine2View; // Might not be necessary if text wraps in a TextView (i.e. if text goes onto a second line if too long for the screen)
 
-    //String accountType;
-    //String databasePath;
     String firstName;
     String lastName;
     String email;
     String address;
+
+    boolean isAdmin;
 
     boolean logInError = false;
     boolean displayProfileInfo = false;
@@ -86,8 +86,10 @@ public class PersonalProfileActivity extends AppCompatActivity {
                     if (accountTypeFromDatabase != null) {
                         if (accountTypeFromDatabase.equals("Admin")) {
                             getAdminInfo();
+                            isAdmin = true;
                         } else {
                             getUserInfo(accountTypeFromDatabase);
+                            isAdmin = false;
                         }
                     }
                     else {
@@ -156,9 +158,9 @@ public class PersonalProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Method to retrieve Admin info from Database
+    // Method to retrieve Admin info
     public void getAdminInfo () {
-        // To be implemented later when we do Admin Functionality
+        ProfileFirstNameTextView.setText("Username: " + AdminAccount.email);
         Toast.makeText(getApplicationContext(), "Welcome! You are logged in as Admin.", Toast.LENGTH_LONG).show();
     }
 
@@ -171,4 +173,21 @@ public class PersonalProfileActivity extends AppCompatActivity {
         // Return to Log in screen (Main Activity)
         startActivity(new Intent(this, MainActivity.class));
     }
+
+    // On Click method for the Go to Account button
+    public void goToAccount (View view) {
+        if (isAdmin) {
+            // close profile activity when going to account activity
+            // note: this doesn't seem to actually close it though, because we can still use back
+            // arrow to go back to profile activity from account activity
+
+            finish();
+            startActivity(new Intent(this, AdminAccountActivity.class));
+        } else {
+            // Logged-in user is not the admin user
+            // To be implemented later
+            Toast.makeText(getApplicationContext(), "Not implemented yet.", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }
