@@ -123,8 +123,8 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                         addUserInfoToDatabase(currentFirebaseUser,mUser);
 
                         // Go to Personal Profile Activity
-                        startActivity(new Intent(SignUpActivity.this, PersonalProfileActivity.class));
                         finish();
+                        startActivity(new Intent(SignUpActivity.this, PersonalProfileActivity.class));
                     } else {
                         Toast.makeText(getApplicationContext(), "Error: could not sign up user to Authentication Scheme", Toast.LENGTH_LONG).show();
                     }
@@ -178,32 +178,6 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             validInput = false;
             errorMsg.append("Invalid address. ");
         }
-
-        // Email validation
-        /*
-        boolean emailIsValid = false;
-        if (email.contains("@")) {
-            if (email.indexOf("@") == email.lastIndexOf("@") && email.indexOf("@") > 0 && email.indexOf("@") < email.length() - 1) {
-                String domains = email.split("@",-2)[1];
-                if (domains.contains(".")) {
-                    String[] domainList = domains.split(".",-2);
-                    int emptydomainctr = 0;
-                    for (String domain : domainList) {
-                        if (domain.isEmpty()) {
-                            emptydomainctr++;
-                        }
-                    }
-                    if (emptydomainctr == 0) {
-                        emailIsValid = true;
-                    }
-                }
-            }
-        }
-        if (!emailIsValid) {
-            validInput = false;
-            errorMsg.append("Invalid email. ");
-        }
-        */
 
         // Email validation
         if (!email.contains("@") || !email.contains(".") || email.length() < 6) {

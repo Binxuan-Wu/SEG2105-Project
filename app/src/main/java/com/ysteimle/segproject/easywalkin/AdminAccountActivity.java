@@ -26,11 +26,13 @@ public class AdminAccountActivity extends AppCompatActivity {
     }
 
     public void goToProfile (View view) {
-        startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
-        // Maybe: Just return to profile activity (but how to do this?)
+        //startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
+        finish();
     }
 
     // On Click method for the Log out button
+    // Maybe we should not have a log-out button here, but just a return-to-profile
+    // button and then we log-out from the profile.
     public void logOut (View view) {
         // sign out from Firebase Authentication
         mAuth.signOut();

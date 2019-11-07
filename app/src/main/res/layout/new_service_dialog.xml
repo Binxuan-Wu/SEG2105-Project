@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/serviceNameDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Service_name"
+        android:textColor="@android:color/black" />
+
+    <EditText
+        android:id="@+id/serviceNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/Service_name"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/providerTypeDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Provider_type"
+        android:textColor="@android:color/black" />
+
+    <RadioGroup
+        android:id="@+id/providerSelectionGrp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/doctorSelectBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Doctor" />
+
+        <RadioButton
+            android:id="@+id/nurseSelectBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Nurse" />
+
+        <RadioButton
+            android:id="@+id/staffSelectBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Staff" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/serviceDescriptionDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Service_Description"
+        android:textColor="@android:color/black" />
+
+    <EditText
+        android:id="@+id/serviceDescriptionEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:hint="@string/Service_Description_Hint"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/serviceCreateBtn"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_orange_dark"
+        android:text="@string/Create_service"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/serviceDeleteBtn"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_light"
+        android:text="@string/Delete_Service"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/dialogCancelBtn"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Cancel"
+        android:textColor="@android:color/black" />
+
+</LinearLayout>

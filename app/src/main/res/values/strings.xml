@@ -27,7 +27,19 @@
     <string name="Manage_Services">Manage Services</string>
     <string name="Manage_Clinics">Manage Clinics and Employees</string>
     <string name="Manage_Patients">Manage Patients</string>
-    <string name="Go_To_Profile">Go to Personal Profile</string>
+    <string name="Go_To_Profile">Return to Personal Profile</string>
+    <string name="Add_new_service">Create new Service</string>
+    <string name="Service_name">Name of Service</string>
+    <string name="Provider_type">Type of Provider</string>
+    <string name="Doctor">Doctor</string>
+    <string name="Nurse">Nurse</string>
+    <string name="Staff">Staff</string>
+    <string name="Service_Description">Description (optional)</string>
+    <string name="Service_Description_Hint">Description (max 100 characters)</string>
+    <string name="Create_service">Create Service</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Delete_Service">Delete Service</string>
+    <string name="Available_Services">List of available services:</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>

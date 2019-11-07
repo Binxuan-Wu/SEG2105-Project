@@ -35,7 +35,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
     private TextView ProfileLastNameTextView;
     private TextView ProfileEmailTextView;
     private TextView ProfileAddressTextView;
-    //private TextView ProfileAddressLine2View; // Might not be necessary if text wraps in a TextView (i.e. if text goes onto a second line if too long for the screen)
 
     String firstName;
     String lastName;
@@ -63,13 +62,12 @@ public class PersonalProfileActivity extends AppCompatActivity {
         ProfileLastNameTextView = findViewById(R.id.ProfileLastNameView);
         ProfileEmailTextView = findViewById(R.id.ProfileEmailView);
         ProfileAddressTextView = findViewById(R.id.ProfileAddressView);
-        //profileAddressLine2View = findViewById(R.id.ProfileAddressLine2View);
 
         // If no user is logged in, this Activity should not be displayed, and we should return to
         // the Log in screen (Main Activity)
         if (mUser == null) {
             Toast.makeText(getApplicationContext(), "Error: No user logged in", Toast.LENGTH_LONG).show();
-            //finish();
+            finish();
             //startActivity(new Intent(this, MainActivity.class));
         }
         else {
@@ -177,11 +175,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
     // On Click method for the Go to Account button
     public void goToAccount (View view) {
         if (isAdmin) {
-            // close profile activity when going to account activity
-            // note: this doesn't seem to actually close it though, because we can still use back
-            // arrow to go back to profile activity from account activity
-
-            finish();
+            // keep profile activity open when going to account activity
             startActivity(new Intent(this, AdminAccountActivity.class));
         } else {
             // Logged-in user is not the admin user

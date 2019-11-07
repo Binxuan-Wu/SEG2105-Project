@@ -30,7 +30,12 @@ dependencies {
     // Adding SDKs for Firebase products for this app (not including analytics)
     // I added Firebase Authentication and Realtime Database
     implementation 'com.google.firebase:firebase-auth:19.1.0'
-    implementation 'com.google.firebase:firebase-database:19.1.0'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+
+    // For scrolling lists
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    // to allow selection of items in list
+    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0'
 }
 
 // Google Play services Gradle plugin
