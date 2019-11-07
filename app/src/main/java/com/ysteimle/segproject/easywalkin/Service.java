@@ -9,7 +9,8 @@ public class Service {
 
     public Service () {}
 
-    public Service (String name, String provider) {
+    public Service (String id, String name, String provider) {
+        this.id = id;
         this.name = name;
         this.provider = provider;
     }

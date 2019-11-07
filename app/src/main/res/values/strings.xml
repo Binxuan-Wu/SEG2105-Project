@@ -25,10 +25,12 @@
     <string name="Go_To_Account">Go to Account</string>
     <string name="Admin_Account">Admin Account</string>
     <string name="Manage_Services">Manage Services</string>
-    <string name="Manage_Clinics">Manage Clinics and Employees</string>
+    <string name="Manage_Employees">Manage Employees</string>
     <string name="Manage_Patients">Manage Patients</string>
     <string name="Go_To_Profile">Return to Personal Profile</string>
     <string name="Add_new_service">Create new Service</string>
+    <string name="Update_Service">Update Service</string>
+    <string name="Edit_Service">Edit Service</string>
     <string name="Service_name">Name of Service</string>
     <string name="Provider_type">Type of Provider</string>
     <string name="Doctor">Doctor</string>
@@ -40,6 +42,8 @@
     <string name="Cancel">Cancel</string>
     <string name="Delete_Service">Delete Service</string>
     <string name="Available_Services">List of available services:</string>
+    <string name="Edit">Edit</string>
+    <string name="Refresh">Refresh</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>
