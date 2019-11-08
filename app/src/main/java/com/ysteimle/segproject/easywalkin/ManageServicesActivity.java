@@ -6,7 +6,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ListAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,7 @@ public class ManageServicesActivity extends AppCompatActivity {
 
     // For the Firebase Database
     DatabaseReference serviceReference;
-    private ChildEventListener mServiceChildEventListener;
+    //private ChildEventListener mServiceChildEventListener;
     private ValueEventListener mServiceValueEventListener;
 
     // For the list of available services that have been created
@@ -65,102 +64,13 @@ public class ManageServicesActivity extends AppCompatActivity {
             }
         });
         serviceRecycler.setAdapter(serviceAdapter);
-        //serviceAdapter.submitList(services);
-
-        /*// we want to add a child event listener to the services list
-        ChildEventListener serviceChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // A new service has been added to the list in the database
-                // Add this service to the displayed list, provided that we haven't already added
-                // it in some other way
-                Service service = dataSnapshot.getValue(Service.class);
-                updateDisplayedServices(service);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // A service has been changed
-                // Must find the service in the services list and replace it with the new service
-                boolean foundInList = false;
-                int serviceIndex = -1;
-                String serviceKey = dataSnapshot.getKey();
-                // Find index of Service object in services list
-                for (int i=0; i<services.size() && !foundInList;i++) {
-                    if (services.get(i).id.equals(serviceKey)) {
-                        // the service object is at index i in the services list
-                        serviceIndex = i;
-                        foundInList = true;
-                    }
-                }
-                if (foundInList) {
-                    Service service = dataSnapshot.getValue(Service.class);
-                    services.set(serviceIndex,service);
-                    // update displayed list
-                    serviceAdapter.submitList(services);
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Error when calling onChildChanged: Service not found in list.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                // A service was removed. The dataSnapshot returns the removed service.
-                // I need to find the service in the list and remove it from the list.
-                Service service = dataSnapshot.getValue(Service.class);
-                String serviceKey = dataSnapshot.getKey();
-                boolean foundInList = false;
-                int serviceIndex = -1;
-                // Find index of Service object in services list
-                for (int i=0; i<services.size() && !foundInList;i++) {
-                    if (services.get(i).id.equals(serviceKey)) {
-                        // the service object is at index i in the services list
-                        serviceIndex = i;
-                        foundInList = true;
-                    }
-                }
-                if (foundInList) {
-                    services.remove(serviceIndex);
-                    // update displayed list
-                    serviceAdapter.submitList(services);
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Error when calling onChildRemoved: Service not found in list.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // This shouldn't happen as I don't re-order the services in the database
-                // The services are simply in the database in whatever order the database added
-                // them.
-                // So, do nothing here.
-                Toast.makeText(getApplicationContext(),
-                        "Error: Service Child Event Listener onChildMoved() was called.", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Do nothing
-                Toast.makeText(getApplicationContext(),
-                        "Error: Service Child Event Listener onCanceller() was called.", Toast.LENGTH_LONG).show();
-            }
-        };
-
-        // attach child event listener to the services list in the database
-        // Note that it takes a while for the last service created to appear
-        serviceReference.addChildEventListener(serviceChildEventListener);
-
-        // store reference to listener so that it can be removed on app stop
-        mServiceChildEventListener = serviceChildEventListener;*/
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
 
-        // Maybe a value event listener for the services list instead
+        // Make a value event listener for the services list
         ValueEventListener serviceValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -188,6 +98,9 @@ public class ManageServicesActivity extends AppCompatActivity {
         mServiceValueEventListener = serviceValueEventListener;
 
         // child event listener for the services list
+        // We won't do this. Creates issues and crashing (although the crashing might be due to
+        // the fact that the recycler view takes a bit of time to update and so the app
+        // crashes if we try to edit a service that isn't technically there anymore).
         ChildEventListener serviceChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -286,9 +199,9 @@ public class ManageServicesActivity extends AppCompatActivity {
         super.onStop();
 
         // Remove services child event listener
-        if (mServiceChildEventListener != null) {
-            serviceReference.removeEventListener(mServiceChildEventListener);
-        }
+        //if (mServiceChildEventListener != null) {
+        //    serviceReference.removeEventListener(mServiceChildEventListener);
+        //}
 
         // Remove services value event listener
         if (mServiceValueEventListener != null) {
@@ -359,7 +272,8 @@ public class ManageServicesActivity extends AppCompatActivity {
                         // Update service in database
                         updateService(serviceId, serviceName, provider, serviceDescription);
                         dialog.dismiss();
-                        refreshScreen();
+                        // Don't refresh automatically but rather prompt user to do so if necessary
+                        //refreshScreen();
                     }
                     // If there was an error in the input, do nothing and wait for user to either
                     // try again or cancel.
@@ -373,7 +287,8 @@ public class ManageServicesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 deleteService(serviceId);
                 dialog.dismiss();
-                refreshScreen();
+                // Don't refresh automatically but rather prompt user to do so if necessary
+                //refreshScreen();
             }
         });
 
@@ -402,7 +317,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         // Create dialog with appropriate layout
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.new_service_dialog,null);
+        final View dialogView = inflater.inflate(R.layout.new_service_dialog, null);
         dialogBuilder.setView(dialogView);
 
         // Declare variables for elements in the dialog
@@ -448,9 +363,11 @@ public class ManageServicesActivity extends AppCompatActivity {
                         // Put service into database
                         addServiceToDB(serviceName, provider, serviceDescription);
                         // Display Toast to say we added the service
-                        Toast.makeText(getApplicationContext(), "Service created.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Service created. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
-                        refreshScreen();
+
+                        // Maybe not do this automatically, but rather prompt user to do it if necessary.
+                        //refreshScreen();
                     }
                     // If there was an error in the input, do nothing and wait for user to either
                     // try again or cancel.
@@ -554,7 +471,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         databaseReference.setValue(service);
 
         // success toast
-        Toast.makeText(getApplicationContext(), "Service updated.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Service updated. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
     }
 
     // Method to delete a service from the database
@@ -566,7 +483,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         databaseReference.removeValue();
 
         // success toast
-        Toast.makeText(getApplicationContext(), "Service deleted.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Service deleted. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
     }
 
     // Refresh method

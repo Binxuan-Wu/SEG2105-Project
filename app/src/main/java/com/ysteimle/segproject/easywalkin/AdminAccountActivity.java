@@ -45,4 +45,16 @@ public class AdminAccountActivity extends AppCompatActivity {
     public void manageServices (View view) {
         startActivity(new Intent(getApplicationContext(), ManageServicesActivity.class));
     }
+
+    public void managePatients (View view) {
+        Intent patientIntent = new Intent(getApplicationContext(), ManageUsersActivity.class);
+        patientIntent.putExtra("userType", "Patient");
+        startActivity(patientIntent);
+    }
+
+    public void manageEmployees (View view) {
+        Intent employeeIntent = new Intent(getApplicationContext(), ManageUsersActivity.class);
+        employeeIntent.putExtra("userType", "Employee");
+        startActivity(employeeIntent);
+    }
 }

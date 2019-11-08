@@ -1,6 +1,6 @@
 package com.ysteimle.segproject.easywalkin;
 
-/**
+/*
  * Adapter for recycler view showing a list of services.
  */
 
@@ -15,34 +15,28 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
-import java.util.List;
-
 
 public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceViewHolder> {
-    // Don't think this is necessary:
-    //List<Service> services;
     
     public interface OnServiceClickListener {
         void onServiceClick(Service service);
     }
     
-    OnServiceClickListener serviceListener;
+    private OnServiceClickListener serviceListener;
 
     // provide reference to the views within a data item
-    public class ServiceViewHolder extends RecyclerView.ViewHolder {
+    class ServiceViewHolder extends RecyclerView.ViewHolder {
         // The Service object that is displayed is also saved here so that we can use the
         // id in the onClick method of the Edit button
-        public Service mService;
+        Service mService;
         // The holder must contain a member variable for each view in the list item
-        public TextView nameView;
-        public TextView providerView;
-        public TextView descriptionView;
-        public Button editBtn;
+        TextView nameView;
+        TextView providerView;
+        TextView descriptionView;
+        Button editBtn;
 
         // Create a constructor that takes the item view as input and finds all the subviews
-        public ServiceViewHolder(View itemView) {
+        ServiceViewHolder(View itemView) {
             // Store itemView as a public final variable that we can use to access the context
             // from any ServiceViewHolder instance
             super(itemView);
@@ -53,14 +47,14 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
             editBtn = (Button) itemView.findViewById(R.id.serviceEditBtn);
         }
         
-        public void bind(final Service service, final OnServiceClickListener listener) {
+        void bind(final Service service, final OnServiceClickListener listener) {
             nameView.setText(service.name);
-            providerView.setText("Provider: " + service.provider);
+            providerView.setText(String.format("Provider: %s",service.provider));
             if (service.description.isEmpty()) {
                 // If there is no description for the service, hide the corresponding text view
                 descriptionView.setVisibility(View.GONE);
             } else {
-                descriptionView.setText("Description: " + service.description);
+                descriptionView.setText(String.format("Description: %s",service.description));
             }
 
             // Set service in viewHolder to be the one at this position
@@ -82,7 +76,7 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
     
 
     // Declare item callback
-    public static final DiffUtil.ItemCallback<Service> service_diff_callback =
+    private static final DiffUtil.ItemCallback<Service> service_diff_callback =
             new DiffUtil.ItemCallback<Service>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Service oldItem, @NonNull Service newItem) {
@@ -103,11 +97,12 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
         super(service_diff_callback);
     }
 
-    public ServiceAdapter (OnServiceClickListener listener) {
+    ServiceAdapter (OnServiceClickListener listener) {
         super(service_diff_callback);
         this.serviceListener = listener;
     }
-
+    
+    @NonNull
     @Override
     public ServiceAdapter.ServiceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -117,8 +112,7 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
         View serviceView = inflater.inflate(R.layout.service_list_item, parent, false);
         
         // Return a new viewholder instance
-        ServiceViewHolder serviceViewHolder = new ServiceViewHolder(serviceView);
-        return serviceViewHolder;
+        return new ServiceViewHolder(serviceView);
     }
     
     @Override
@@ -126,25 +120,7 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
         // Get data model
         Service service = getItem(position);
         
-        // Set item views based on data model
-        TextView nameView = viewHolder.nameView;
-        nameView.setText(service.name);
-        TextView providerView = viewHolder.providerView;
-        providerView.setText("Provider: " + service.provider);
-        TextView descriptionView = viewHolder.descriptionView;
-        if (service.description.isEmpty()) {
-            // If there is no description for the service, hide the corresponding text view
-            descriptionView.setVisibility(View.GONE);
-        } else {
-            descriptionView.setText("Description: " + service.description);
-        }
-        
-        // Set service in viewHolder to be the one at this position
-        // Then, viewHolder knows all the info in the service and in particular it's ID,
-        // which can then be used in the onClick method of the Edit button to find the service
-        // in the database
-        viewHolder.mService = service;
-        
+        // set up text view and onClickListener
         viewHolder.bind(service,serviceListener);
     }
 

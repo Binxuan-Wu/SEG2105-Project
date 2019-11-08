@@ -42,8 +42,11 @@
     <string name="Cancel">Cancel</string>
     <string name="Delete_Service">Delete Service</string>
     <string name="Available_Services">List of available services:</string>
+    <string name="Patient_List">List of Patients:</string>
+    <string name="Employee_List">List of Employees:</string>
     <string name="Edit">Edit</string>
     <string name="Refresh">Refresh</string>
+    <string name="Delete">Delete</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>
