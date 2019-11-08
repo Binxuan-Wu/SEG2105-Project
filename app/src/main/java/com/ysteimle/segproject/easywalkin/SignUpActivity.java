@@ -85,12 +85,12 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
 
     public void onClickSignUp (View view) {
         // Get user input from all EditText fields
-        String firstName = firstNameEdit.getText().toString();
-        String lastName = lastNameEdit.getText().toString();
-        String email = emailEdit.getText().toString();
-        String address = addressEdit.getText().toString();
-        String password = passwordEdit.getText().toString();
-        String confirmpassword = confirmPasswordEdit.getText().toString();
+        final String firstName = firstNameEdit.getText().toString();
+        final String lastName = lastNameEdit.getText().toString();
+        final String email = emailEdit.getText().toString();
+        final String address = addressEdit.getText().toString();
+        final String password = passwordEdit.getText().toString();
+        final String confirmpassword = confirmPasswordEdit.getText().toString();
 
         // Get account type
         final String accountType = accountSpinner.getSelectedItem().toString().trim();
@@ -100,7 +100,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                 confirmpassword)) {
 
             // Hash password
-            String passwordHash = hexHash(password);
+            final String passwordHash = hexHash(password);
             // Confirm hashing worked
             if (passwordHash.equals("Failure")) {
                 Toast.makeText(this, "Password Hashing Failed", Toast.LENGTH_LONG).show();
@@ -108,7 +108,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             }
 
             // Create user object
-            final User mUser = new User(accountType, firstName, lastName, email, address, passwordHash);
+            //final User mUser = new User(accountType, firstName, lastName, email, address, passwordHash);
 
             // Create Authentication Success Verification On Complete Listener
             OnCompleteListener<AuthResult> authResultOnCompleteListener = new OnCompleteListener<AuthResult>() {
@@ -118,13 +118,21 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                         //Toast.makeText(getApplicationContext(), "Successfully signed up user to Authentication Scheme", Toast.LENGTH_LONG).show();
                         // Get currently signed in user
                         FirebaseUser currentFirebaseUser = mAuth.getCurrentUser();
+                        if (currentFirebaseUser != null) {
+                            String userId = currentFirebaseUser.getUid();
 
-                        // Add User Info to database
-                        addUserInfoToDatabase(currentFirebaseUser,mUser);
+                            // Create user object
+                            User mUser = new User(accountType, userId, firstName, lastName, email, address, passwordHash);
 
-                        // Go to Personal Profile Activity
-                        finish();
-                        startActivity(new Intent(SignUpActivity.this, PersonalProfileActivity.class));
+                            // Add User Info to database
+                            addUserInfoToDatabase(currentFirebaseUser, mUser);
+
+                            // Go to Personal Profile Activity
+                            finish();
+                            startActivity(new Intent(SignUpActivity.this, PersonalProfileActivity.class));
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error: did not automatically log in to the Authentication Scheme.", Toast.LENGTH_LONG).show();
+                        }
                     } else {
                         Toast.makeText(getApplicationContext(), "Error: could not sign up user to Authentication Scheme", Toast.LENGTH_LONG).show();
                     }

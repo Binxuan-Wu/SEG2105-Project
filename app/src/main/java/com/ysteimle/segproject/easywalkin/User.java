@@ -47,6 +47,10 @@ public class User {
                 && this.email.equals(user.email) && this.passwordHash.equals(user.passwordHash);
     }
 
+    // Methods to get and set id
+    public String getId() { return id; }
+    public void setId (String id) { this.id = id; }
+
     /*
     @Exclude
     String getAccountType() { return accountType; }

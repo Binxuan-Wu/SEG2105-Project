@@ -109,6 +109,7 @@ public class ManageUsersActivity extends AppCompatActivity {
                 showDeleteUserDialog(user, databasePath);
             }
         });
+        userRecycler.setAdapter(userAdapter);
     }
 
     @Override
@@ -168,7 +169,7 @@ public class ManageUsersActivity extends AppCompatActivity {
         final Button cancelBtn = (Button) dialogView.findViewById(R.id.delDialogCancelBtn);
 
         // Make dialog appear
-        dialogBuilder.setTitle(R.string.Edit_Service);
+        //dialogBuilder.setTitle("Delete user");
         final AlertDialog dialog = dialogBuilder.create();
         dialog.show();
 
@@ -215,8 +216,11 @@ public class ManageUsersActivity extends AppCompatActivity {
     // Refresh method
     public void refreshScreen () {
         // essentially close and re-open activity
+        // need to pass the user type as extra info in the intent again
+        Intent userIntent = new Intent(getApplicationContext(), ManageUsersActivity.class);
+        userIntent.putExtra("userType", userType);
         finish();
-        startActivity(new Intent(getApplicationContext(), ManageUsersActivity.class));
+        startActivity(userIntent);
     }
 
     // Refresh button onClick method

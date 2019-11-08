@@ -9,7 +9,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -68,7 +72,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
         if (mUser == null) {
             Toast.makeText(getApplicationContext(), "Error: No user logged in", Toast.LENGTH_LONG).show();
             finish();
-            //startActivity(new Intent(this, MainActivity.class));
         }
         else {
             //Toast.makeText(getApplicationContext(), "There is a logged in user", Toast.LENGTH_LONG).show();
@@ -80,17 +83,20 @@ public class PersonalProfileActivity extends AppCompatActivity {
                     // Find account Type associated to Uid of currently logged in user in the
                     // AccountTypes directory of the database
                     String accountTypeFromDatabase = (String) dataSnapshot.getValue();
-                    ProfileAccountTextView.setText("Account Type: " + accountTypeFromDatabase);
                     if (accountTypeFromDatabase != null) {
-                        if (accountTypeFromDatabase.equals("Admin")) {
-                            getAdminInfo();
-                            isAdmin = true;
+                        if (accountTypeFromDatabase.equals("Deleted")) {
+                            deleteUserFromAuthScheme();
                         } else {
-                            getUserInfo(accountTypeFromDatabase);
-                            isAdmin = false;
+                            ProfileAccountTextView.setText(String.format("Account Type: %s",accountTypeFromDatabase));
+                            if (accountTypeFromDatabase.equals("Admin")) {
+                                getAdminInfo();
+                                isAdmin = true;
+                            } else if (accountTypeFromDatabase.equals("Employee") || accountTypeFromDatabase.equals("Patient")) {
+                                getUserInfo(accountTypeFromDatabase);
+                                isAdmin = false;
+                            }
                         }
-                    }
-                    else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "Error: Could not find user in AccountTypes List in Database.", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -138,10 +144,10 @@ public class PersonalProfileActivity extends AppCompatActivity {
                     email = currentUser.email;
                     address = currentUser.address;
                     // Fill in the information in the fields
-                    ProfileFirstNameTextView.setText("First Name: " + firstName);
-                    ProfileLastNameTextView.setText("Last Name: " + lastName);
-                    ProfileEmailTextView.setText("Email: " + email);
-                    ProfileAddressTextView.setText("Address: " + address);
+                    ProfileFirstNameTextView.setText(String.format("First Name: %s",firstName));
+                    ProfileLastNameTextView.setText(String.format("Last Name: %s",lastName));
+                    ProfileEmailTextView.setText(String.format("Email: %s",email));
+                    ProfileAddressTextView.setText(String.format("Address: %s",address));
                     // Display Welcome message
                     Toast.makeText(getApplicationContext(), "Welcome " + firstName + "! You are logged in as " + accountTypeForInfoMsg + ".", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -158,7 +164,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
 
     // Method to retrieve Admin info
     public void getAdminInfo () {
-        ProfileFirstNameTextView.setText("Username: " + AdminAccount.email);
+        ProfileFirstNameTextView.setText(String.format("Username: %s", AdminAccount.email));
         Toast.makeText(getApplicationContext(), "Welcome! You are logged in as Admin.", Toast.LENGTH_LONG).show();
     }
 
@@ -182,6 +188,36 @@ public class PersonalProfileActivity extends AppCompatActivity {
             // To be implemented later
             Toast.makeText(getApplicationContext(), "Not implemented yet.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    // Method to delete user from authentication scheme
+    // Assumes that the user profile info has already been deleted from the database
+    private void deleteUserFromAuthScheme() {
+        String userId = mUser.getUid();
+        DatabaseReference databaseReference = mDatabase.child("AccountTypes").child(userId);
+
+        // delete information from Account Types List in database
+        databaseReference.removeValue();
+
+        // delete user from authentication scheme
+        mUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    // if successfully deleted user from authentication scheme, close this activity
+                    // and display message
+                    finish();
+                    Toast.makeText(getApplicationContext(), "Your account has been deleted.", Toast.LENGTH_LONG).show();
+                } else {
+                    // something went wrong
+                    Toast.makeText(getApplicationContext(), "An error occurred while deleting your account.", Toast.LENGTH_LONG).show();
+                    // go back anyway
+                    finish();
+                }
+            }
+        });
+
+
     }
 
 }

@@ -47,7 +47,7 @@ public class UserAdapter extends ListAdapter<User, UserAdapter.UserViewHolder> {
         }
 
         void bind(final User user, final OnUserClickListener listener) {
-            nameView.setText(String.format("%s, %s", user.lastName, user.firstName));
+            nameView.setText(String.format("%s %s", user.firstName,user.lastName));
             emailView.setText(user.email);
 
             // For now, make sure clinic text view is gone; could add it later if we want to

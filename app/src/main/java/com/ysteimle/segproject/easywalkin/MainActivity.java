@@ -58,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter your email address and password", Toast.LENGTH_LONG).show();
         }
         else if (validLogInInput(email, password)) {
+            // empty textview fields
+            passwordEdit.setText("");
+            emailEdit.setText("");
+
+            // sign in to authentication scheme
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         // password validation
         if (password.length() < 6 || password.length() > 12) {
             validInput = false;
-            errorMsg.append("Invalid password. ");
+            errorMsg.append("Invalid password.");
         }
         if (!validInput) {
             Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
