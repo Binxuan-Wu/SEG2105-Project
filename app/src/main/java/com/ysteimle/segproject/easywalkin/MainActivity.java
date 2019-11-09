@@ -78,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         }
-        else {
-            Toast.makeText(getApplicationContext(), "Error: Log in failed.", Toast.LENGTH_LONG).show();
-        }
     }
 
     public boolean validLogInInput(String email, String password) {

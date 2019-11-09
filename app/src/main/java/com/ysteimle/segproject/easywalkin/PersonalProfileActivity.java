@@ -1,19 +1,17 @@
 package com.ysteimle.segproject.easywalkin;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -174,8 +172,8 @@ public class PersonalProfileActivity extends AppCompatActivity {
         mAuth.signOut();
         // After signing out from Firebase authentication, finish this activity
         finish();
-        // Return to Log in screen (Main Activity)
-        startActivity(new Intent(this, MainActivity.class));
+        // Return to Log in screen (Main Activity) -- this should be automatic (don't need to start activity again)
+        //startActivity(new Intent(this, MainActivity.class));
     }
 
     // On Click method for the Go to Account button

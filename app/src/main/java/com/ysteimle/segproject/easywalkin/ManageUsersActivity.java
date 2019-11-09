@@ -198,15 +198,11 @@ public class ManageUsersActivity extends AppCompatActivity {
         // get reference to user entry in appropriate user list in database
         DatabaseReference userRef = userReference.child(userId);
 
-        // Remove both entries from database
-        //accountRef.removeValue();
+        // Remove profile info from database
         userRef.removeValue();
 
-        // Remove user from authentication scheme
-        // I can't get Firebase Admin SDK to work properly, so I will just make the user automatically
-        // delete their own account when they try to log in again next time.
-
-        // Set account type entry to Deleted so that account will be deleted
+        // Set account type entry to Deleted so that account will be deleted from authentication
+        // scheme next time user logs in
         accountRef.setValue("Deleted");
 
         // Display message
