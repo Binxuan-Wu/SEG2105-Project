@@ -61,13 +61,12 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        //accountType = parent.getItemAtPosition(position).toString().trim();
+        // Do nothing
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
-        // Make accountType default to Patient
-        //accountType = "Patient";
+        // Do nothing
     }
 
     private void setUpVariables() {
@@ -106,9 +105,6 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                 Toast.makeText(this, "Password Hashing Failed", Toast.LENGTH_LONG).show();
                 return; // terminate since we did not manage to hash the password
             }
-
-            // Create user object
-            //final User mUser = new User(accountType, firstName, lastName, email, address, passwordHash);
 
             // Create Authentication Success Verification On Complete Listener
             OnCompleteListener<AuthResult> authResultOnCompleteListener = new OnCompleteListener<AuthResult>() {

@@ -1,19 +1,16 @@
 package com.ysteimle.segproject.easywalkin;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class AdminAccountActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth; // Authentication instance
-    //private FirebaseUser mUser; // User that is currently logged in // Is this necessary?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +19,9 @@ public class AdminAccountActivity extends AppCompatActivity {
 
         // Initialise the Firebase Variables
         mAuth = FirebaseAuth.getInstance();
-        //mUser = mAuth.getCurrentUser(); // Is this necessary?
     }
 
     public void goToProfile (View view) {
-        //startActivity(new Intent(getApplicationContext(), PersonalProfileActivity.class));
         finish();
     }
 

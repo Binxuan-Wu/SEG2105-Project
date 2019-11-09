@@ -26,11 +26,9 @@ public class PersonalProfileActivity extends AppCompatActivity {
     // DatabaseReference instances
     private DatabaseReference mDatabase;
     private DatabaseReference mAccountTypeReference;
-    private DatabaseReference mUserReference;
 
     // Value Event Listener Variables (so that they can be removed when app is stopped)
     private ValueEventListener mAccountTypeListener;
-    private ValueEventListener mUserListener;
 
     private TextView ProfileAccountTextView;
     private TextView ProfileFirstNameTextView;
@@ -44,9 +42,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
     String address;
 
     boolean isAdmin;
-
-    boolean logInError = false;
-    boolean displayProfileInfo = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
