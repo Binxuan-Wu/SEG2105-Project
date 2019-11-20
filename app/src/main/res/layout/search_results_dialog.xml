@@ -7,6 +7,8 @@
         android:id="@+id/searchResultsCountMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
@@ -14,6 +16,8 @@
         android:id="@+id/searchResultsActionMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
@@ -26,11 +30,6 @@
         android:importantForAutofill="no"
         android:inputType="textPassword" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchResultsRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <Button
         android:id="@+id/searchResultsCancelBtn"
         style="@android:style/Widget.Button"
@@ -38,5 +37,11 @@
         android:layout_height="wrap_content"
         android:text="@string/Cancel"
         android:textColor="@android:color/black" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchResultsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

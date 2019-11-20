@@ -41,6 +41,7 @@
     <string name="Service_Description_Hint">Description (max 100 characters)</string>
     <string name="Create_service">Create Service</string>
     <string name="Cancel">Cancel</string>
+    <string name="Update">Update</string>
     <string name="Delete_Service">Delete Service</string>
     <string name="Available_Services">List of available services:</string>
     <string name="Patient_List">List of Patients:</string>
@@ -58,6 +59,16 @@
     <string name="Clinic_Info">Clinic information</string>
     <string name="No_clinic_msg">There is no clinic associated to your account. Click here to create a new clinic or join an existing one.</string>
     <string name="Hours_of_operation">Hours of operation</string>
+    <string name="Working_Hours_Dialog_Instructions">Enter the open hours in the 24 hour clock format hh:mm (e.g. 08:30, 16:00). If the clinic is closed on a certain day, simply leave both fields blank.</string>
+    <string name="To">to</string>
+    <string name="Monday">Monday</string>
+    <string name="Tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="Thursday">Thursday</string>
+    <string name="Friday">Friday</string>
+    <string name="Saturday">Saturday</string>
+    <string name="Sunday">Sunday</string>
+    <string name="Closed">Closed</string>
     <string name="Services_offered">Services offered</string>
     <string name="Add_service">Add Service</string>
     <string name="Create_new_clinic_msg">To create a new clinic, please enter the clinic information below. Required fields are marked with an asterisk (*).</string>
@@ -79,6 +90,7 @@
     <string name="Clinic_payment_star">Accepted payment methods (separated by commas) *</string>
     <string name="Clinic_payment_hint">e.g. Debit, Credit, Cash</string>
     <string name="Password_with_restrictions_star">Password (6 to 12 characters) *</string>
+    <string name="Time_format">00:00</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/whDialogInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/Working_Hours_Dialog_Instructions"
+        android:textColor="@android:color/black" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogMonDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Monday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogMonOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogMonSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogMonCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogTueDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Tuesday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogTueOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogTueSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogTueCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogWedDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Wednesday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogWedOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogWedSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogWedCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogThuDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Thursday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogThuOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogThuSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogThuCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogFriDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Friday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogFriOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogFriSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogFriCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogSatDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Saturday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogSatOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogSatSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogSatCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/whDialogSunDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:text="@string/Sunday"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogSunOTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+            <TextView
+                android:id="@+id/whDialogSunSeparator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text="@string/To"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/whDialogSunCTEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/Time_format"
+                android:importantForAutofill="no"
+                android:inputType="date|numberSigned|number|datetime|numberDecimal|time" />
+
+
+        </TableRow>
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/whDialogUpdateBtn"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="@string/Update"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/whDialogCancelBtn"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Cancel"
+        android:textColor="@android:color/black" />
+
+</LinearLayout>

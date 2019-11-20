@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,22 @@ public class EmployeeAccountActivity extends AppCompatActivity {
     private TextView clinicInsuranceView;
     private TextView clinicPaymentView;
     private TextView clinicInfoTitleView;
+    private TextView workingHoursDesc;
+    private TextView servicesDesc;
+    private TextView mondayView;
+    private TextView tuesdayView;
+    private TextView wednesdayView;
+    private TextView thursdayView;
+    private TextView fridayView;
+    private TextView saturdayView;
+    private TextView sundayView;
+    private TextView mondayDesc;
+    private TextView tuesdayDesc;
+    private TextView wednesdayDesc;
+    private TextView thursdayDesc;
+    private TextView fridayDesc;
+    private TextView saturdayDesc;
+    private TextView sundayDesc;
     private Button editHoursBtn;
     private Button addServiceBtn;
 
@@ -139,6 +156,22 @@ public class EmployeeAccountActivity extends AppCompatActivity {
             clinicInsuranceView = findViewById(R.id.EmpAccClinicInsuranceView);
             clinicPaymentView = findViewById(R.id.EmpAccClinicPaymentView);
             clinicInfoTitleView = findViewById(R.id.ClinicInfoTitle);
+            workingHoursDesc = findViewById(R.id.EmpAccClinicWorkingHoursTitle);
+            servicesDesc = findViewById(R.id.EmpAccServicesOfferedTitle);
+            mondayView = findViewById(R.id.EmpAccMondayView);
+            tuesdayView = findViewById(R.id.EmpAccTuesdayView);
+            wednesdayView = findViewById(R.id.EmpAccWednesdayView);
+            thursdayView = findViewById(R.id.EmpAccThursdayView);
+            fridayView = findViewById(R.id.EmpAccFridayView);
+            saturdayView = findViewById(R.id.EmpAccSaturdayView);
+            sundayView = findViewById(R.id.EmpAccSundayView);
+            mondayDesc = findViewById(R.id.EmpAccMondayDesc);
+            tuesdayDesc = findViewById(R.id.EmpAccTuesdayDesc);
+            wednesdayDesc = findViewById(R.id.EmpAccWednesdayDesc);
+            thursdayDesc = findViewById(R.id.EmpAccThursdayDesc);
+            fridayDesc = findViewById(R.id.EmpAccFridayDesc);
+            saturdayDesc = findViewById(R.id.EmpAccSaturdayDesc);
+            sundayDesc = findViewById(R.id.EmpAccSundayDesc);
             editHoursBtn = findViewById(R.id.EmpAccEditHoursBtn);
             addServiceBtn = findViewById(R.id.EmpAccAddServiceBtn);
 
@@ -219,6 +252,15 @@ public class EmployeeAccountActivity extends AppCompatActivity {
             });
 
             // hide everything else
+            workingHoursDesc.setVisibility(View.GONE);
+            servicesDesc.setVisibility(View.GONE);
+            mondayDesc.setVisibility(View.GONE);
+            tuesdayDesc.setVisibility(View.GONE);
+            wednesdayDesc.setVisibility(View.GONE);
+            thursdayDesc.setVisibility(View.GONE);
+            fridayDesc.setVisibility(View.GONE);
+            saturdayDesc.setVisibility(View.GONE);
+            sundayDesc.setVisibility(View.GONE);
             editHoursBtn.setVisibility(View.GONE);
             addServiceBtn.setVisibility(View.GONE);
 
@@ -259,8 +301,17 @@ public class EmployeeAccountActivity extends AppCompatActivity {
         clinicPhoneView.setText(String.format("Phone number: %s", clinicToDisplay.phone));
         clinicInsuranceView.setText(String.format("Accepted insurance types: %s", clinicToDisplay.insuranceTypes));
         clinicPaymentView.setText(String.format("Accepted payment methods: %s", clinicToDisplay.paymentMethods));
+        // working hours
+        mondayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(1));
+        tuesdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(2));
+        wednesdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(3));
+        thursdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(4));
+        fridayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(5));
+        saturdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(6));
+        sundayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(7));
+
+        // list of selected services
         if (clinicToDisplay.serviceIdList.size() >= 1) {
-            // list of selected services
             selectedServicesAdapter = new ServiceAdapter(editVersion, new ServiceAdapter.OnServiceClickListener() {
                 @Override
                 public void onServiceClick(Service service) {
@@ -334,6 +385,14 @@ public class EmployeeAccountActivity extends AppCompatActivity {
         // update clinic in database
         mReference.child(clinicListPath).child(clinicId).setValue(clinic);
         // after adding service, need to update the displayed information
+        updateDisplayedClinicInfo(clinic);
+    }
+
+    public void setWorkingHoursOfClinic(List<OpenTime> newTimes) {
+        clinic.setOpenTimes(newTimes);
+        // update clinic in database
+        mReference.child(clinicListPath).child(clinicId).setValue(clinic);
+        // after updating working hours, need to update the displayed information
         updateDisplayedClinicInfo(clinic);
     }
 
@@ -483,8 +542,125 @@ public class EmployeeAccountActivity extends AppCompatActivity {
         }
     }
 
-    public void goToCreateJoinClinic(View view) {
-        startActivity(new Intent(getApplicationContext(), CreateJoinClinicActivity.class));
+    public void workingHoursEditBtnOnClick (View view) {
+        showUpdateWorkingHoursDialog();
+    }
+
+    // method to show dialog through which we can set the opening hours of the clinic
+    public void showUpdateWorkingHoursDialog () {
+        // Create dialog with appropriate layout
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.working_hours_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        // Declare variables for elements in the dialog
+        final EditText monOT = dialogView.findViewById(R.id.whDialogMonOTEdit);
+        final EditText monCT = dialogView.findViewById(R.id.whDialogMonCTEdit);
+        final EditText tueOT = dialogView.findViewById(R.id.whDialogTueOTEdit);
+        final EditText tueCT = dialogView.findViewById(R.id.whDialogTueCTEdit);
+        final EditText wedOT = dialogView.findViewById(R.id.whDialogWedOTEdit);
+        final EditText wedCT = dialogView.findViewById(R.id.whDialogWedCTEdit);
+        final EditText thuOT = dialogView.findViewById(R.id.whDialogThuOTEdit);
+        final EditText thuCT = dialogView.findViewById(R.id.whDialogThuCTEdit);
+        final EditText friOT = dialogView.findViewById(R.id.whDialogFriOTEdit);
+        final EditText friCT = dialogView.findViewById(R.id.whDialogFriCTEdit);
+        final EditText satOT = dialogView.findViewById(R.id.whDialogSatOTEdit);
+        final EditText satCT = dialogView.findViewById(R.id.whDialogSatCTEdit);
+        final EditText sunOT = dialogView.findViewById(R.id.whDialogSunOTEdit);
+        final EditText sunCT = dialogView.findViewById(R.id.whDialogSunCTEdit);
+        final Button updateBtn = dialogView.findViewById(R.id.whDialogUpdateBtn);
+        final Button cancelBtn = dialogView.findViewById(R.id.whDialogCancelBtn);
+
+        // Make dialog appear
+        final AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+
+        // add onClick listeners to the buttons
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean errorFound = false;
+                String monOpen = monOT.getText().toString().trim();
+                String monClosed = monCT.getText().toString().trim();
+                String tueOpen = tueOT.getText().toString().trim();
+                String tueClosed = tueCT.getText().toString().trim();
+                String wedOpen = wedOT.getText().toString().trim();
+                String wedClosed = wedCT.getText().toString().trim();
+                String thuOpen = thuOT.getText().toString().trim();
+                String thuClosed = thuCT.getText().toString().trim();
+                String friOpen = friOT.getText().toString().trim();
+                String friClosed = friCT.getText().toString().trim();
+                String satOpen = satOT.getText().toString().trim();
+                String satClosed = satCT.getText().toString().trim();
+                String sunOpen = sunOT.getText().toString().trim();
+                String sunClosed = sunCT.getText().toString().trim();
+
+                String[] inputTimes = {monOpen, monClosed, tueOpen, tueClosed, wedOpen, wedClosed,
+                        thuOpen, thuClosed, friOpen, friClosed, satOpen, satClosed, sunOpen, sunClosed};
+
+                List<OpenTime> newTimes = getInitialOpenTimes();
+                for (int i = 1; i <= 7 && !errorFound; i ++) {
+                    int index = indexOfDayCode(i);
+                    OpenTime newTime;
+                    if (inputTimes[index].isEmpty() && inputTimes[index + 1].isEmpty()) {
+                        newTime = new OpenTime(i);
+                    } else if (validTime(inputTimes[index]) && validTime(inputTimes[index + 1])) {
+                        newTime = new OpenTime(i,LocalTime.parse(inputTimes[index]),LocalTime.parse(inputTimes[index + 1]));
+                        if (!newTime.isValid()) {
+                            errorFound = true;
+                        } else {
+                            newTimes.set(i-1,newTime);
+                        }
+                    } else {
+                        errorFound = true;
+                    }
+
+                }
+
+                if (errorFound) {
+                    Toast.makeText(getApplicationContext(), "Error: Invalid working hours.", Toast.LENGTH_LONG).show();
+                } else {
+                    setWorkingHoursOfClinic(newTimes);
+                    Toast.makeText(getApplicationContext(), "Successfully updated working hours.", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+            }
+        });
+
+    }
+
+
+    public boolean validTime(String input) {
+        if (!input.isEmpty()) {
+            try {
+                LocalTime.parse(input);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        else return false;
+    }
+
+    public int indexOfDayCode (int i) {
+        return (i - 1) * 2;
+    }
+
+    public List<OpenTime> getInitialOpenTimes () {
+        List<OpenTime> initialTimes = new ArrayList<>();
+        for (int i = 1; i<=7; i++) {
+            OpenTime openTime = new OpenTime(i);
+            initialTimes.add(openTime);
+        }
+        return initialTimes;
     }
 
 }

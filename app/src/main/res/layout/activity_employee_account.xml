@@ -26,14 +26,16 @@
 
         <TextView
             android:id="@+id/ClinicInfoTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/Clinic_Info"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/EmployeeAccountTitle" />
 
         <TextView
@@ -104,6 +106,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:background="@android:color/holo_blue_light"
+            android:onClick="workingHoursEditBtnOnClick"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="@string/Edit"
@@ -122,6 +125,146 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccEditHoursBtn"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/EmpAccMondayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/Monday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccClinicWorkingHoursTitle" />
+
+        <TextView
+            android:id="@+id/EmpAccTuesdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Tuesday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccMondayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccWednesdayDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Wednesday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccTuesdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccThursdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Thursday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccWednesdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccFridayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Friday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccThursdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccSaturdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Saturday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccFridayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccSundayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Sunday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccSaturdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccMondayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccMondayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccMondayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccTuesdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccTuesdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccTuesdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccWednesdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccWednesdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccWednesdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccThursdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccThursdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccThursdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccFridayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccFridayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccFridayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccSaturdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccSaturdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccSaturdayDesc" />
+
+        <TextView
+            android:id="@+id/EmpAccSundayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/EmpAccSundayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/EmpAccSundayDesc" />
+
         <Button
             android:id="@+id/EmpAccAddServiceBtn"
             style="@android:style/Widget.Button"
@@ -136,7 +279,7 @@
             android:text="@string/Add_service"
             android:textColor="@android:color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/EmpAccEditHoursBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccSundayDesc" />
 
         <TextView
             android:id="@+id/EmpAccServicesOfferedTitle"
@@ -154,13 +297,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/EmpAccServicesOfferedRecycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:scrollbars="vertical"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/EmpAccAddServiceBtn"/>
+            app:layout_constraintTop_toBottomOf="@+id/EmpAccAddServiceBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

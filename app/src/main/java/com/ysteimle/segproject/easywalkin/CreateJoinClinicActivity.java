@@ -36,9 +36,12 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
     private String currentEmployeeId;
     private List<Clinic> clinicsInDB = new ArrayList<> ();
 
+    private final String clinicOfEmployeePath = "ClinicOfEmployee";
+    private final String clinicListPath = "ClinicList";
+
 
     private final int joinClinic = 0;
-    private boolean hasJoinedClinic = false;
+    private boolean hasJoinedClinic;
 
     // Text Edit fields and buttons
     private EditText searchClinicEdit;
@@ -72,6 +75,9 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
         }
         // determine who is currently logged in
         currentEmployeeId = mUser.getUid();
+        // we only arrived here because the employee has not yet joined a clinic
+        // or maybe I should set this variable via a value event listener...
+        hasJoinedClinic = false;
 
         // set up the variables for the text edit fields
         searchClinicEdit = (EditText) findViewById(R.id.SearchClinicToJoinEdit);
@@ -104,10 +110,11 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
 
     // Method to retrieve all existing clinics from database
     public void getExistingClinicsFromDB() {
-        DatabaseReference clinicReference = mReference.child(EmployeeAccount.getClinicListPath());
+        DatabaseReference clinicReference = mReference.child(clinicListPath);
         clinicReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                clinicsInDB.clear();
                 for (DataSnapshot clinicSnapshot : dataSnapshot.getChildren()) {
                     Clinic clinic = clinicSnapshot.getValue(Clinic.class);
                     clinicsInDB.add(clinic);
@@ -211,7 +218,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
 
     public void addEmployeeToClinicInDB(String selectedClinicID, final String selectedEmployeeId) {
         // This adds employee id to list stored in clinic in database
-        final DatabaseReference clinicReference = mReference.child(EmployeeAccount.getClinicListPath()).child(selectedClinicID);
+        final DatabaseReference clinicReference = mReference.child(clinicListPath).child(selectedClinicID);
         clinicReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -235,7 +242,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
             }
         });
         // also set the clinic associated to employee in database to appropriate value
-        final DatabaseReference clinicOfEmployeeRef = mReference.child(EmployeeAccount.getClinicOfEmployeePath()).child(currentEmployeeId);
+        final DatabaseReference clinicOfEmployeeRef = mReference.child(clinicOfEmployeePath).child(currentEmployeeId);
         clinicOfEmployeeRef.setValue(selectedClinicID);
     }
 
@@ -256,7 +263,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
         if (validClinicCreationInfo(Name, Phone, StreetAdd, Unit, Province, City, PostalCode,
                 Insurances, Payments, Password, ConfirmPassword)) {
             Address address = new Address(Unit, StreetAdd, City, Province, PostalCode);
-            DatabaseReference clinicListRef = mReference.child(EmployeeAccount.getClinicListPath());
+            DatabaseReference clinicListRef = mReference.child(clinicListPath);
             String id = clinicListRef.push().getKey();
             String passwordHash = PasswordHelper.hexHash(Password);
             Clinic clinic = new Clinic(id, Name, address, Phone, Insurances, Payments, passwordHash);
@@ -265,7 +272,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
             // add clinic to database
             clinicListRef.child(id).setValue(clinic);
             // also set the clinic associated to employee in database to appropriate value
-            DatabaseReference clinicOfEmployeeRef = mReference.child(EmployeeAccount.getClinicOfEmployeePath()).child(currentEmployeeId);
+            DatabaseReference clinicOfEmployeeRef = mReference.child(clinicOfEmployeePath).child(currentEmployeeId);
             clinicOfEmployeeRef.setValue(id);
             // employee has now joined a clinic
             hasJoinedClinic = true;
