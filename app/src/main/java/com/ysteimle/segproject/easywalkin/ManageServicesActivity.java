@@ -35,6 +35,7 @@ public class ManageServicesActivity extends AppCompatActivity {
     private ValueEventListener mServiceValueEventListener;
 
     // For the list of available services that have been created
+    private static final int editVersion = 0;
     private RecyclerView serviceRecycler;
     private ServiceAdapter serviceAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -56,14 +57,16 @@ public class ManageServicesActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         serviceRecycler.setLayoutManager(layoutManager);
 
-        // Specify adapter for the service list
+        // The create-adapter part is now inside the value event listener. Maybe this will solve
+        // the time-lag for the changes to appear on the screen. Yes, it does.
+        /*// Specify adapter for the service list
         serviceAdapter = new ServiceAdapter(new ServiceAdapter.OnServiceClickListener() {
             @Override
             public void onServiceClick(Service service) {
                 updateDeleteService(service);
             }
         });
-        serviceRecycler.setAdapter(serviceAdapter);
+        serviceRecycler.setAdapter(serviceAdapter);*/
     }
 
     @Override
@@ -79,6 +82,14 @@ public class ManageServicesActivity extends AppCompatActivity {
                     Service service = serviceSnapshot.getValue(Service.class);
                     services.add(service);
                 }
+                // Specify adapter for the service list
+                serviceAdapter = new ServiceAdapter(editVersion, new ServiceAdapter.OnServiceClickListener() {
+                    @Override
+                    public void onServiceClick(Service service) {
+                        updateDeleteService(service);
+                    }
+                });
+                serviceRecycler.setAdapter(serviceAdapter);
                 serviceAdapter.submitList(services);
             }
 
@@ -96,112 +107,12 @@ public class ManageServicesActivity extends AppCompatActivity {
 
         // store reference to value event listener so that we can remove it when the app stops
         mServiceValueEventListener = serviceValueEventListener;
-
-        // child event listener for the services list
-        // We won't do this. Creates issues and crashing (although the crashing might be due to
-        // the fact that the recycler view takes a bit of time to update and so the app
-        // crashes if we try to edit a service that isn't technically there anymore).
-        ChildEventListener serviceChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // A new service has been added to the list in the database
-                // Add this service to the displayed list, provided that we haven't already added
-                // it in some other way
-                Service service = dataSnapshot.getValue(Service.class);
-                updateDisplayedServices(service);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // A service has been changed
-                // Must find the service in the services list and replace it with the new service
-                boolean foundInList = false;
-                int serviceIndex = -1;
-                String serviceKey = dataSnapshot.getKey();
-                // Find index of Service object in services list
-                for (int i=0; i<services.size() && !foundInList;i++) {
-                    if (services.get(i).id.equals(serviceKey)) {
-                        // the service object is at index i in the services list
-                        serviceIndex = i;
-                        foundInList = true;
-                    }
-                }
-                if (foundInList) {
-                    Service service = dataSnapshot.getValue(Service.class);
-                    services.set(serviceIndex,service);
-                    // update displayed list
-                    serviceAdapter.submitList(services);
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Error when calling onChildChanged: Service not found in list.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                // this is the method that is problematic. Removing the service obtained from the
-                // dataSnapshot doesn't work and the code below makes the app crash. So, I am trying
-                // with a ValueEventListener instead of a ChildEventListener
-
-                // A service was removed. The dataSnapshot returns the removed service.
-                // I need to find the service in the list and remove it from the list.
-                Service service = dataSnapshot.getValue(Service.class);
-                String serviceKey = dataSnapshot.getKey();
-                boolean foundInList = false;
-                int serviceIndex = -1;
-                // Find index of Service object in services list
-                for (int i=0; i<services.size() && !foundInList;i++) {
-                    if (services.get(i).id.equals(serviceKey)) {
-                        // the service object is at index i in the services list
-                        serviceIndex = i;
-                        foundInList = true;
-                    }
-                }
-                if (foundInList) {
-                    services.remove(serviceIndex);
-                    // update displayed list
-                    serviceAdapter.submitList(services);
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Error when calling onChildRemoved: Service not found in list.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // This shouldn't happen as I don't re-order the services in the database
-                // The services are simply in the database in whatever order the database added
-                // them.
-                // So, do nothing here.
-                Toast.makeText(getApplicationContext(),
-                        "Error: Service Child Event Listener onChildMoved() was called.", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Do nothing
-                Toast.makeText(getApplicationContext(),
-                        "Error: Service Child Event Listener onCanceller() was called.", Toast.LENGTH_LONG).show();
-            }
-        };
-
-        // attach child event listener to the services list in the database
-        // Note that it takes a while for the last service created to appear
-        //serviceReference.addChildEventListener(serviceChildEventListener);
-
-        // store reference to listener so that it can be removed on app stop
-        //mServiceChildEventListener = serviceChildEventListener;
     }
 
 
     @Override
     public void onStop() {
         super.onStop();
-
-        // Remove services child event listener
-        //if (mServiceChildEventListener != null) {
-        //    serviceReference.removeEventListener(mServiceChildEventListener);
-        //}
 
         // Remove services value event listener
         if (mServiceValueEventListener != null) {
@@ -363,7 +274,7 @@ public class ManageServicesActivity extends AppCompatActivity {
                         // Put service into database
                         addServiceToDB(serviceName, provider, serviceDescription);
                         // Display Toast to say we added the service
-                        Toast.makeText(getApplicationContext(), "Service created. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Service created.", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
 
                         // Maybe not do this automatically, but rather prompt user to do it if necessary.
@@ -427,12 +338,10 @@ public class ManageServicesActivity extends AppCompatActivity {
         // Save the service in the database
         serviceReference.child(id).setValue(service);
 
-        // Update displayed list
-        // Probably not necessary
-        //updateDisplayedServices(service);
     }
 
     // Method to update displayed service list (to call when we create a new service)
+    // this probably won't work anymore as I have changed how I set up the serviceAdapter
     public void updateDisplayedServices () {
         serviceReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -453,6 +362,7 @@ public class ManageServicesActivity extends AppCompatActivity {
     }
 
     // Method to update displayed service list by adding new service
+    // this probably won't work anymore as I have changed how I set up the serviceAdapter
     public void updateDisplayedServices (Service newService) {
         if (services.indexOf(newService) == -1) {
             // If service not in displayed list, add it.
@@ -471,7 +381,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         databaseReference.setValue(service);
 
         // success toast
-        Toast.makeText(getApplicationContext(), "Service updated. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Service updated.", Toast.LENGTH_LONG).show();
     }
 
     // Method to delete a service from the database
@@ -483,19 +393,8 @@ public class ManageServicesActivity extends AppCompatActivity {
         databaseReference.removeValue();
 
         // success toast
-        Toast.makeText(getApplicationContext(), "Service deleted. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Service deleted.", Toast.LENGTH_LONG).show();
     }
 
-    // Refresh method
-    public void refreshScreen () {
-        // essentially close and re-open activity
-        finish();
-        startActivity(new Intent(getApplicationContext(), ManageServicesActivity.class));
-    }
-
-    // Refresh button onClick method
-    public void refreshBtnOnClick (View view) {
-        refreshScreen();
-    }
 
 }

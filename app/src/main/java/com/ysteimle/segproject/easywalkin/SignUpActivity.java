@@ -99,7 +99,7 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
                 confirmpassword)) {
 
             // Hash password
-            final String passwordHash = hexHash(password);
+            final String passwordHash = PasswordHelper.hexHash(password);
             // Confirm hashing worked
             if (passwordHash.equals("Failure")) {
                 Toast.makeText(this, "Password Hashing Failed", Toast.LENGTH_LONG).show();
@@ -148,6 +148,11 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             String databasePath = user.accountType.trim() + "List";
             mReference.child(databasePath).child(firebaseUser.getUid()).setValue(user);
             //Toast.makeText(getApplicationContext(), "Successfully added user info to database", Toast.LENGTH_LONG).show();
+            // If the user is an employee, need to add the employee id to the ClinicOfEmployee List
+            // in the database with value None
+            if (user.accountType.equals("Employee")) {
+                mReference.child(EmployeeAccount.getClinicOfEmployeePath()).child(firebaseUser.getUid()).setValue(EmployeeAccount.getNoClinicMsg());
+            }
         }
         else {
             Toast.makeText(getApplicationContext(), "Error: Could not add user info to database", Toast.LENGTH_LONG).show();
@@ -204,22 +209,6 @@ public class SignUpActivity extends AppCompatActivity implements OnItemSelectedL
             Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
         }
         return validInput;
-    }
-
-    // Method that takes a plaintext String as an input and heturns a String containing the hexadecimal
-    // representation of the hashed plaintext using SHA-256
-    public String hexHash (String plaintext) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = md.digest(plaintext.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return "Failure";
-        }
     }
 
     // Testing method that verifies what spinner selection returns

@@ -24,6 +24,7 @@
     <string name="LogOut">Log out</string>
     <string name="Go_To_Account">Go to Account</string>
     <string name="Admin_Account">Admin Account</string>
+    <string name="Employee_Account">Employee Account</string>
     <string name="Manage_Services">Manage Services</string>
     <string name="Manage_Employees">Manage Employees</string>
     <string name="Manage_Patients">Manage Patients</string>
@@ -47,6 +48,37 @@
     <string name="Edit">Edit</string>
     <string name="Refresh">Refresh</string>
     <string name="Delete">Delete</string>
+    <string name="Select">Select</string>
+    <string name="Join">Join</string>
+    <string name="Create_Join_Clinic_Msg">There is no clinic associated to your account. Please create a new clinic or join an existing one.</string>
+    <string name="Create_clinic">Create new clinic</string>
+    <string name="Join_Clinic">Join this clinic</string>
+    <string name="Search_Clinic_To_Join_Msg">To join an existing clinic, please enter its name below.</string>
+    <string name="ClinicName">Clinic name</string>
+    <string name="Clinic_Info">Clinic information</string>
+    <string name="No_clinic_msg">There is no clinic associated to your account. Click here to create a new clinic or join an existing one.</string>
+    <string name="Hours_of_operation">Hours of operation</string>
+    <string name="Services_offered">Services offered</string>
+    <string name="Add_service">Add Service</string>
+    <string name="Create_new_clinic_msg">To create a new clinic, please enter the clinic information below. Required fields are marked with an asterisk (*).</string>
+    <string name="ClinicName_star">Clinic name *</string>
+    <string name="Phone_star">Phone number *</string>
+    <string name="Phone_prompt">888 888 8888</string>
+    <string name="Street_Address_star">Address line 1 *</string>
+    <string name="Street_Address_hint">e.g. 123 Main St</string>
+    <string name="Clinic_unit">Unit/room number</string>
+    <string name="Clinic_unit_hint">e.g. C302</string>
+    <string name="Clinic_province_star">Province code *</string>
+    <string name="Clinic_province_hint">e.g. ON</string>
+    <string name="Clinic_city_star">City *</string>
+    <string name="Clinic_city_hint">City name</string>
+    <string name="Clinic_postal_code_star">Postal code *</string>
+    <string name="Clinic_postal_code_hint">e.g. J1K 3N9</string>
+    <string name="Clinic_insurance_star">Accepted insurance types (separated by commas) *</string>
+    <string name="Clinic_insurance_hint">e.g. RAMQ, OHIP</string>
+    <string name="Clinic_payment_star">Accepted payment methods (separated by commas) *</string>
+    <string name="Clinic_payment_hint">e.g. Debit, Credit, Cash</string>
+    <string name="Password_with_restrictions_star">Password (6 to 12 characters) *</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>

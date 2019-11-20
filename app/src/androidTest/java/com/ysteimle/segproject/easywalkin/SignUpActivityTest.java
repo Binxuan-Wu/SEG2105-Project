@@ -43,9 +43,10 @@ public class SignUpActivityTest {
                 "Password91", "Password91"));
     }
 
+    // Will this still work even if I have moved the password hashing method to a helper class?
     @Test
     public void passwordHashTest() {
-        assertNotEquals(signUpActivity.hexHash("p4562werG"),"Failure");
-        assertEquals(signUpActivity.hexHash("12345678"),"ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f");
+        assertNotEquals(PasswordHelper.hexHash("p4562werG"),"Failure");
+        assertEquals(PasswordHelper.hexHash("12345678"),"ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f");
     }
 }

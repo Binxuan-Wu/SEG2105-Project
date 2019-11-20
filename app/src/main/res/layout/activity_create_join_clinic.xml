@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
+    tools:context=".CreateJoinClinicActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/CreateJoinClinicMsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/Create_Join_Clinic_Msg"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/JoinExistingClinicBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="searchClinicOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Join_Clinic"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchClinicToJoinEdit" />
+
+        <EditText
+            android:id="@+id/SearchClinicToJoinEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/ClinicName"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchClinicToJoinMsg" />
+
+        <TextView
+            android:id="@+id/SearchClinicToJoinMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/Search_Clinic_To_Join_Msg"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CreateJoinClinicMsg" />
+
+        <TextView
+            android:id="@+id/CreateNewClinicMsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/Create_new_clinic_msg"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/JoinExistingClinicBtn" />
+
+        <TextView
+            android:id="@+id/ClinicNamePrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ClinicName_star"
+            app:layout_constraintStart_toStartOf="@+id/CreateNewClinicMsg"
+            app:layout_constraintTop_toBottomOf="@+id/CreateNewClinicMsg" />
+
+        <EditText
+            android:id="@+id/ClinicNameEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/ClinicName"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicNamePrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicPhonePrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Phone_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicNameEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicNameEdit" />
+
+        <EditText
+            android:id="@+id/ClinicPhoneEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/Phone_prompt"
+            android:inputType="phone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPhonePrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicStreetAddPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Street_Address_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicPhoneEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPhoneEdit" />
+
+        <EditText
+            android:id="@+id/ClinicStreetAddEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/Street_Address_hint"
+            android:inputType="textPostalAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicStreetAddPrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicUnitPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_unit"
+            app:layout_constraintStart_toStartOf="@+id/ClinicStreetAddEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicStreetAddEdit" />
+
+        <EditText
+            android:id="@+id/ClinicUnitEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Clinic_unit_hint"
+            android:inputType="textPostalAddress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ClinicProvinceEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicUnitPrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicProvincePrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_province_star"
+            app:layout_constraintEnd_toEndOf="@+id/ClinicStreetAddEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicStreetAddEdit" />
+
+        <EditText
+            android:id="@+id/ClinicProvinceEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Clinic_province_hint"
+            android:inputType="textCapCharacters"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ClinicUnitEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicProvincePrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicCityPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_city_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicUnitEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicUnitEdit" />
+
+        <EditText
+            android:id="@+id/ClinicCityEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:hint="@string/Clinic_city_hint"
+            android:inputType="textPostalAddress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/ClinicUnitEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicCityPrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicPostalCodePrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_postal_code_star"
+            app:layout_constraintEnd_toEndOf="@+id/ClinicProvinceEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicProvinceEdit" />
+
+        <EditText
+            android:id="@+id/ClinicPostalCodeEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Clinic_postal_code_hint"
+            android:inputType="textPostalAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/ClinicProvinceEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPostalCodePrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicInsurancePrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_insurance_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicCityEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicCityEdit" />
+
+        <EditText
+            android:id="@+id/ClinicInsuranceEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Clinic_insurance_hint"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicInsurancePrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicPaymentPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Clinic_payment_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicInsuranceEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicInsuranceEdit" />
+
+        <EditText
+            android:id="@+id/ClinicPaymentEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Clinic_payment_hint"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPaymentPrompt"
+            android:importantForAutofill="no" />
+
+        <TextView
+            android:id="@+id/ClinicPasswordPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Password_with_restrictions_star"
+            app:layout_constraintStart_toStartOf="@+id/ClinicPaymentEdit"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPaymentEdit" />
+
+        <EditText
+            android:id="@+id/ClinicPasswordEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/Password"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPasswordPrompt"
+            android:importantForAutofill="no" />
+
+        <EditText
+            android:id="@+id/ClinicConfirmPasswordEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/ConfirmPassword"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicPasswordEdit"
+            android:importantForAutofill="no" />
+
+        <Button
+            android:id="@+id/CreateClinicBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_dark"
+            android:onClick="createClinicOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Create_clinic"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicConfirmPasswordEdit" />
+<!--            tools:layout_editor_absoluteY="644dp" -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -41,6 +41,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
     String email;
     String address;
 
+    String accountType;
     boolean isAdmin;
 
     @Override
@@ -81,6 +82,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
                             deleteUserFromAuthScheme();
                         } else {
                             ProfileAccountTextView.setText(String.format("Account Type: %s",accountTypeFromDatabase));
+                            accountType = accountTypeFromDatabase;
                             if (accountTypeFromDatabase.equals("Admin")) {
                                 getAdminInfo();
                                 isAdmin = true;
@@ -177,9 +179,14 @@ public class PersonalProfileActivity extends AppCompatActivity {
             // keep profile activity open when going to account activity
             startActivity(new Intent(this, AdminAccountActivity.class));
         } else {
-            // Logged-in user is not the admin user
-            // To be implemented later
-            Toast.makeText(getApplicationContext(), "Not implemented yet.", Toast.LENGTH_LONG).show();
+            if (accountType.equals("Employee")) {
+                // logged-in user is an employee
+                startActivity(new Intent(this, EmployeeAccountActivity.class));
+            } else {
+                // Logged-in user is a patient
+                // To be implemented later
+                Toast.makeText(getApplicationContext(), "Not implemented yet.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

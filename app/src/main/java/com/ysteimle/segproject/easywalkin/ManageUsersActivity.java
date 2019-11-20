@@ -102,14 +102,14 @@ public class ManageUsersActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         userRecycler.setLayoutManager(layoutManager);
 
-        // Specify adapter for user list
+        /*// Specify adapter for user list
         userAdapter = new UserAdapter(userDatabasePath, new UserAdapter.OnUserClickListener() {
             @Override
             public void onUserClick(User user, String databasePath) {
                 showDeleteUserDialog(user, databasePath);
             }
         });
-        userRecycler.setAdapter(userAdapter);
+        userRecycler.setAdapter(userAdapter);*/
     }
 
     @Override
@@ -126,7 +126,14 @@ public class ManageUsersActivity extends AppCompatActivity {
                     User user = userSnapshot.getValue(User.class);
                     userList.add(user);
                 }
-
+                // Specify adapter for user list
+                userAdapter = new UserAdapter(userDatabasePath, new UserAdapter.OnUserClickListener() {
+                    @Override
+                    public void onUserClick(User user, String databasePath) {
+                        showDeleteUserDialog(user, databasePath);
+                    }
+                });
+                userRecycler.setAdapter(userAdapter);
                 userAdapter.submitList(userList);
             }
 
@@ -169,7 +176,6 @@ public class ManageUsersActivity extends AppCompatActivity {
         final Button cancelBtn = (Button) dialogView.findViewById(R.id.delDialogCancelBtn);
 
         // Make dialog appear
-        //dialogBuilder.setTitle("Delete user");
         final AlertDialog dialog = dialogBuilder.create();
         dialog.show();
 
@@ -206,21 +212,7 @@ public class ManageUsersActivity extends AppCompatActivity {
         accountRef.setValue("Deleted");
 
         // Display message
-        Toast.makeText(getApplicationContext(), "User deleted. You may need to refresh the screen to see the changes immediately.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "User deleted.", Toast.LENGTH_LONG).show();
     }
 
-    // Refresh method
-    public void refreshScreen () {
-        // essentially close and re-open activity
-        // need to pass the user type as extra info in the intent again
-        Intent userIntent = new Intent(getApplicationContext(), ManageUsersActivity.class);
-        userIntent.putExtra("userType", userType);
-        finish();
-        startActivity(userIntent);
-    }
-
-    // Refresh button onClick method
-    public void refreshBtnOnClick (View view) {
-        refreshScreen();
-    }
 }

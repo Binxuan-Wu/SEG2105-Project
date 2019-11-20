@@ -24,6 +24,11 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
     
     private OnServiceClickListener serviceListener;
 
+    // We either edit the service or we select the service
+    private static final int editVersion = 0;
+    private static final int selectVersion = 1;
+    private int version;
+
     // provide reference to the views within a data item
     class ServiceViewHolder extends RecyclerView.ViewHolder {
         // The Service object that is displayed is also saved here so that we can use the
@@ -55,6 +60,13 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
                 descriptionView.setVisibility(View.GONE);
             } else {
                 descriptionView.setText(String.format("Description: %s",service.description));
+            }
+
+            // text on button changes if we are in selectmode rather than edit mode
+            if (version == selectVersion) {
+                editBtn.setText(R.string.Select);
+            } else {
+                editBtn.setText(R.string.Edit);
             }
 
             // Set service in viewHolder to be the one at this position
@@ -97,9 +109,10 @@ public class ServiceAdapter extends ListAdapter<Service, ServiceAdapter.ServiceV
         super(service_diff_callback);
     }
 
-    ServiceAdapter (OnServiceClickListener listener) {
+    ServiceAdapter (int version, OnServiceClickListener listener) {
         super(service_diff_callback);
         this.serviceListener = listener;
+        this.version = version;
     }
     
     @NonNull
