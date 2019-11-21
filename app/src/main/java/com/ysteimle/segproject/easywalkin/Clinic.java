@@ -110,7 +110,7 @@ public class Clinic {
     // the open time was successfully added
     // note: need to have initialised openTimes before we can set an open time for a specific day
     @Exclude
-    public boolean setOpenTimeForDay (int dayCode, LocalTime openingTime, LocalTime closingTime) {
+    public boolean setOpenTimeForDay (int dayCode, String openingTime, String closingTime) {
         int index = dayCode - 1;
         OpenTime openTime = new OpenTime(dayCode,openingTime,closingTime);
         if (openTime.isValid()) {

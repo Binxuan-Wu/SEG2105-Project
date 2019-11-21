@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
+    private ValueEventListener mClinicListener;
 
     private String currentEmployeeId;
     private List<Clinic> clinicsInDB = new ArrayList<> ();
@@ -42,6 +44,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
 
     private final int joinClinic = 0;
     private boolean hasJoinedClinic;
+    private InputValidator iv = new InputValidator();
 
     // Text Edit fields and buttons
     private EditText searchClinicEdit;
@@ -72,43 +75,78 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
         if (mUser == null) {
             // no user logged in, we should not be here
             finish();
-        }
-        // determine who is currently logged in
-        currentEmployeeId = mUser.getUid();
-        // we only arrived here because the employee has not yet joined a clinic
-        // or maybe I should set this variable via a value event listener...
-        hasJoinedClinic = false;
+        } else {
+            // determine who is currently logged in
+            currentEmployeeId = mUser.getUid();
+            // we only arrived here because the employee has not yet joined a clinic
+            // or maybe I should set this variable via a value event listener...
+            hasJoinedClinic = false;
 
-        // set up the variables for the text edit fields
-        searchClinicEdit = (EditText) findViewById(R.id.SearchClinicToJoinEdit);
-        clinicNameEdit = (EditText) findViewById(R.id.ClinicNameEdit);
-        clinicPhoneEdit = (EditText) findViewById(R.id.ClinicPhoneEdit);
-        clinicStreetAddEdit = (EditText) findViewById(R.id.ClinicStreetAddEdit);
-        clinicUnitEdit = (EditText) findViewById(R.id.ClinicUnitEdit);
-        clinicProvinceEdit = (EditText) findViewById(R.id.ClinicProvinceEdit);
-        clinicCityEdit = (EditText) findViewById(R.id.ClinicCityEdit);
-        clinicPostalCodeEdit = (EditText) findViewById(R.id.ClinicPostalCodeEdit);
-        clinicInsuranceEdit = (EditText) findViewById(R.id.ClinicInsuranceEdit);
-        clinicPaymentEdit = (EditText) findViewById(R.id.ClinicPaymentEdit);
-        searchClinicBtn = (Button) findViewById(R.id.JoinExistingClinicBtn);
-        createClinicBtn = (Button) findViewById(R.id.CreateClinicBtn);
-        clinicPasswordEdit = (EditText) findViewById(R.id.ClinicPasswordEdit);
-        clinicConfirmPasswordEdit = (EditText) findViewById(R.id.ClinicConfirmPasswordEdit);
+            // set up the variables for the text edit fields
+            searchClinicEdit = (EditText) findViewById(R.id.SearchClinicToJoinEdit);
+            clinicNameEdit = (EditText) findViewById(R.id.ClinicNameEdit);
+            clinicPhoneEdit = (EditText) findViewById(R.id.ClinicPhoneEdit);
+            clinicStreetAddEdit = (EditText) findViewById(R.id.ClinicStreetAddEdit);
+            clinicUnitEdit = (EditText) findViewById(R.id.ClinicUnitEdit);
+            clinicProvinceEdit = (EditText) findViewById(R.id.ClinicProvinceEdit);
+            clinicCityEdit = (EditText) findViewById(R.id.ClinicCityEdit);
+            clinicPostalCodeEdit = (EditText) findViewById(R.id.ClinicPostalCodeEdit);
+            clinicInsuranceEdit = (EditText) findViewById(R.id.ClinicInsuranceEdit);
+            clinicPaymentEdit = (EditText) findViewById(R.id.ClinicPaymentEdit);
+            searchClinicBtn = (Button) findViewById(R.id.JoinExistingClinicBtn);
+            createClinicBtn = (Button) findViewById(R.id.CreateClinicBtn);
+            clinicPasswordEdit = (EditText) findViewById(R.id.ClinicPasswordEdit);
+            clinicConfirmPasswordEdit = (EditText) findViewById(R.id.ClinicConfirmPasswordEdit);
+
+            // value event listener to find existing clinics in database
+            ValueEventListener clinicListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    clinicsInDB.clear();
+                    for (DataSnapshot clinicSnapshot : dataSnapshot.getChildren()) {
+                        Clinic clinic = clinicSnapshot.getValue(Clinic.class);
+                        if (clinic != null) {
+                            clinicsInDB.add(clinic);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            mReference.child(clinicListPath).addValueEventListener(clinicListener);
+            mClinicListener = clinicListener;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mClinicListener != null) {
+            mReference.child(clinicListPath).removeEventListener(mClinicListener);
+        }
     }
 
     public void searchClinicOnClick(View view) {
         String nameToSearch = searchClinicEdit.getText().toString().trim();
-        getExistingClinicsFromDB();
-        List<Clinic> matchingClinics = findClinicsByName(nameToSearch);
-        showClinicSearchResultsDialog(matchingClinics);
+        List<Clinic> clinicsFromDB = clinicsInDB;
+        if (!clinicsFromDB.isEmpty()) {
+            List<Clinic> matchingClinics = findClinicsByName(nameToSearch);
+            showClinicSearchResultsDialog(matchingClinics);
+        } else {
+            Toast.makeText(getApplicationContext(), "Error: Could not find any clinics in database.", Toast.LENGTH_LONG).show();
+        }
         if (hasJoinedClinic) {
             // If employee successfully joined a clinic via the dialog, exit this activity
             // and go back to employee account activity
+            Toast.makeText(getApplicationContext(), "You have successfully joined a clinic.", Toast.LENGTH_LONG).show();
             finish();
         }
     }
 
-    // Method to retrieve all existing clinics from database
+    /*// Method to retrieve all existing clinics from database
     public void getExistingClinicsFromDB() {
         DatabaseReference clinicReference = mReference.child(clinicListPath);
         clinicReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,12 +165,13 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
             }
         });
 
-    }
+    }*/
 
     // Methods to find clinic with certain information in the clinicsInDB list
     public List<Clinic> findClinicsByName (String name) {
         List<Clinic> matchingClinics = new ArrayList<>();
-        for (Clinic clinic : clinicsInDB) {
+        List<Clinic> clinicsFromDB = clinicsInDB;
+        for (Clinic clinic : clinicsFromDB) {
             if (clinic.clinicName.equals(name)) {
                 matchingClinics.add(clinic);
             }
@@ -157,6 +196,7 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
 
         // Text to display
         int numberOfClinicsFound = matchingClinics.size();
+        // Note: not grammatically correct when there is exactly 1 clinic found...
         resultCountMsgView.setText(String.format("%d Clinics match your search.", numberOfClinicsFound));
         if (numberOfClinicsFound <= 0) {
             resultsActionMsgView.setText("Please try again.");
@@ -193,8 +233,12 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
                         String chosenClinicId = clinic.clinicId;
                         // add employee to clinic in database
                         addEmployeeToClinicInDB(chosenClinicId,currentEmployeeId);
+                        // status message
+                        Toast.makeText(getApplicationContext(), "Successfully joined clinic.", Toast.LENGTH_LONG).show();
                         // close dialog
                         dialog.dismiss();
+                        // Put this here to automatically return to employee account upon successfully joining a clinic
+                        finish();
                     } else {
                         // Invalid password. Employee cannot join clinic.
                         Toast.makeText(getApplicationContext(), "Error: Invalid Password.", Toast.LENGTH_LONG).show();
@@ -279,7 +323,11 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
         }
 
         // If employee has successfully created and joined clinic, close this activity
-        if (hasJoinedClinic) { finish(); }
+        if (hasJoinedClinic) {
+            // status message
+            Toast.makeText(getApplicationContext(), "Successfully created clinic.", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
     }
 
@@ -292,13 +340,52 @@ public class CreateJoinClinicActivity extends AppCompatActivity {
         StringBuilder errorMsg = new StringBuilder();
         errorMsg.append("Error:");
         // clinic name must be between 3 and 50 characters
-        if (name.length() <= 2 || name.length() >= 50) {
+        if (!iv.isValidName(name, 3, 50)) {
             verdict = false;
             errorMsg.append(" Invalid Clinic name.");
         }
-        // phone number must have format 888 888 8888 (where each 8 can be replaced by any digit)
-        String phoneRegex = "";
-
+        if (!iv.isValidPhoneNumber(phone)) {
+            verdict = false;
+            errorMsg.append(" Invalid phone number.");
+        }
+        if (!iv.isValidStreetAddress(streetAdd)) {
+            verdict = false;
+            errorMsg.append(" Invalid street address.");
+        }
+        if (!iv.isValidUnit(unit)) {
+            verdict = false;
+            errorMsg.append(" Invalid unit.");
+        }
+        if (!iv.isValidProvinceCode(province)) {
+            verdict = false;
+            errorMsg.append(" Invalid province code.");
+        }
+        if (!iv.isValidCity(city)) {
+            verdict = false;
+            errorMsg.append(" Invalid city name.");
+        }
+        if (!iv.isValidPostalCode(postalCode)) {
+            verdict = false;
+            errorMsg.append(" Invalid postal code.");
+        }
+        if (!iv.isValidInsuranceOrPayment(insuranceTypes)) {
+            verdict = false;
+            errorMsg.append(" Invalid insurance types.");
+        }
+        if (!iv.isValidInsuranceOrPayment(paymentMethods)) {
+            verdict = false;
+            errorMsg.append(" Invalid payment methods.");
+        }
+        if (!iv.isValidPassword(password)) {
+            verdict = false;
+            errorMsg.append(" Invalid password.");
+        } else if (!password.equals(confirmPassword)) {
+            verdict = false;
+            errorMsg.append(" Both passwords must match.");
+        }
+        if (!verdict) {
+            Toast.makeText(getApplicationContext(), errorMsg.toString(), Toast.LENGTH_LONG).show();
+        }
         return verdict;
     }
 }

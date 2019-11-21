@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickNewUserMsg (View view) {
+        // empty text views
+        emailEdit.setText("");
+        passwordEdit.setText("");
         // Application context and activity
         Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
         startActivity(intent);
@@ -81,16 +84,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean validLogInInput(String email, String password) {
+        InputValidator iv = new InputValidator();
         boolean validInput = true;
         StringBuilder errorMsg = new StringBuilder();
         errorMsg.append("Error: ");
         // Email validation
-        if (!email.contains("@") || !email.contains(".") || email.length() < 6) {
+        if (!iv.isValidEmail(email)) {
             validInput = false;
             errorMsg.append("Invalid email. ");
         }
         // password validation
-        if (password.length() < 6 || password.length() > 12) {
+        if (!iv.isValidPassword(password)) {
             validInput = false;
             errorMsg.append("Invalid password.");
         }

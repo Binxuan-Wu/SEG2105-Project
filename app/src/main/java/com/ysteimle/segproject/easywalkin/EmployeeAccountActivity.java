@@ -189,36 +189,6 @@ public class EmployeeAccountActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        *//*if (clinicId.equals(noClinicMsg)) {
-            // if employee has no associated clinic, go immediately to CreateJoinClinicActivity
-            startActivity(new Intent(getApplicationContext(), CreateJoinClinicActivity.class));
-        } else {
-            // if there is an associated clinic, display the information
-
-            clinicRef = mReference.child(clinicListPath).child(clinicId);
-
-            ValueEventListener clinicListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Clinic updatedClinic = dataSnapshot.getValue(Clinic.class);
-                    clinic = updatedClinic;
-                    updateDisplayedClinicInfo(clinic);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
-            // attach clinic listener
-            clinicRef.addValueEventListener(clinicListener);
-            // keep reference to value event listener so that we can remove it at app stop
-            mclinicListener = clinicListener;
-
-            // display information of clinic on screen -- not needed since it is called by the value event listener (I think)
-            //updateDisplayedClinicInfo();
-        }*//*
-
     }*/
 
     @Override
@@ -247,6 +217,7 @@ public class EmployeeAccountActivity extends AppCompatActivity {
             clinicInfoTitleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    finish();
                     startActivity(new Intent(getApplicationContext(), CreateJoinClinicActivity.class));
                 }
             });
@@ -612,8 +583,8 @@ public class EmployeeAccountActivity extends AppCompatActivity {
                     OpenTime newTime;
                     if (inputTimes[index].isEmpty() && inputTimes[index + 1].isEmpty()) {
                         newTime = new OpenTime(i);
-                    } else if (validTime(inputTimes[index]) && validTime(inputTimes[index + 1])) {
-                        newTime = new OpenTime(i,LocalTime.parse(inputTimes[index]),LocalTime.parse(inputTimes[index + 1]));
+                    } else if (OpenTime.validTime(inputTimes[index]) && OpenTime.validTime(inputTimes[index + 1])) {
+                        newTime = new OpenTime(i,inputTimes[index],inputTimes[index + 1]);
                         if (!newTime.isValid()) {
                             errorFound = true;
                         } else {
@@ -637,18 +608,6 @@ public class EmployeeAccountActivity extends AppCompatActivity {
 
     }
 
-
-    public boolean validTime(String input) {
-        if (!input.isEmpty()) {
-            try {
-                LocalTime.parse(input);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        else return false;
-    }
 
     public int indexOfDayCode (int i) {
         return (i - 1) * 2;
