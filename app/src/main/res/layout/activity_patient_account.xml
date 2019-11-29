@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
+    tools:context=".PatientAccountActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/PatientAccountTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/Patient_Account"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/PatAccSearchBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="goToSearchClinicActivity"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Clinic_search"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PatientAccountTitle" />
+
+        <Button
+            android:id="@+id/PatAccRefreshBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_orange_light"
+            android:onClick="refreshBtnOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Refresh"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PatAccSearchBtn" />
+
+        <TextView
+            android:id="@+id/PatAccLastUpdated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="@+id/PatAccRefreshBtn"
+            app:layout_constraintEnd_toEndOf="@+id/PatAccRefreshBtn"
+            app:layout_constraintTop_toBottomOf="@+id/PatAccRefreshBtn" />
+
+        <TextView
+            android:id="@+id/CheckInTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/Remote_check_in"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PatAccLastUpdated" />
+
+
+        <TextView
+            android:id="@+id/CheckInMsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CheckInTitle" />
+
+
+        <Button
+            android:id="@+id/CheckInCancelBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_red_light"
+            android:onClick="checkInCancelBtnOnClick"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/Cancel"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/CheckInDate"
+            app:layout_constraintTop_toTopOf="@+id/CheckInDate" />
+
+        <TextView
+            android:id="@+id/CheckInDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:ems="15"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CheckInMsg" />
+
+
+        <TextView
+            android:id="@+id/CheckInClinicInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:ems="15"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CheckInDate" />
+
+        <TextView
+            android:id="@+id/CheckInExpectedWaitMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:text="@string/Expected_wait"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CheckInClinicInfo" />
+
+        <TextView
+            android:id="@+id/CheckInExpectedWaitTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintBaseline_toBaselineOf="@+id/CheckInExpectedWaitMsg"
+            app:layout_constraintStart_toEndOf="@+id/CheckInExpectedWaitMsg" />
+
+
+        <androidx.constraintlayout.widget.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/CheckInGroup"
+            app:constraint_referenced_ids="CheckInCancelBtn,CheckInDate,CheckInClinicInfo,CheckInExpectedWaitMsg,CheckInExpectedWaitTime"/>
+
+        <TextView
+            android:id="@+id/AppointmentsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/Scheduled_appointments"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CheckInExpectedWaitMsg" />
+
+        <Button
+            android:id="@+id/PatAccAppointmentBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="goToSearchClinicActivity"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/New_appointment"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AppointmentsTitle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/AppointmentRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PatAccAppointmentBtn"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/AppointmentGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="AppointmentsTitle,PatAccAppointmentBtn,AppointmentRecycler" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

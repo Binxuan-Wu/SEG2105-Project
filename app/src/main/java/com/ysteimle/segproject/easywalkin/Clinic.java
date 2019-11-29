@@ -73,6 +73,12 @@ public class Clinic {
         // add something about opening hours...
     }
 
+    // method to get clinic information (name, phone, address) in a single string
+    @Exclude
+    public String getClinicInfo() {
+        return clinicName + "\n" + phone + "\n" + clinicAddress.printFormat();
+    }
+
     // to deal with the working hours:
     // day codes: Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4,
     // Friday = 5, Saturday = 6, Sunday = 7
@@ -127,6 +133,28 @@ public class Clinic {
     @Exclude
     public void setOpenTimes (List<OpenTime> times) {
         this.openTimes = times;
+    }
+
+    // methods to help with searching for clinics according to various criteria
+    @Exclude
+    public boolean isAtLocation(String cityName, String provinceCode) {
+        return clinicAddress.isAtLocation(cityName,provinceCode);
+    }
+
+    @Exclude
+    public boolean offersServiceWithID(String serviceId) {
+        return serviceIdList.contains(serviceId);
+    }
+
+
+    @Exclude
+    public boolean isOpenAtDateTime(int dayCode, String time) {
+        if (OpenTime.validDayCode(dayCode) && OpenTime.validTime(time)){
+            OpenTime openTime = getOpenTimeForDay(dayCode);
+            return openTime.isOpenAtTime(time);
+        } else {
+            return false;
+        }
     }
 
 }

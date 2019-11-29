@@ -37,4 +37,6 @@ public class EmployeeAccountActivityTest {
         OpenTime validTime3 = new OpenTime(2, "","");
         assertTrue(validTime3.isValid());
     }
+
+
 }

@@ -184,8 +184,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(this, EmployeeAccountActivity.class));
             } else {
                 // Logged-in user is a patient
-                // To be implemented later
-                Toast.makeText(getApplicationContext(), "Not implemented yet.", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, PatientAccountActivity.class));
             }
         }
     }

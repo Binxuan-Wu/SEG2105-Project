@@ -25,6 +25,7 @@
     <string name="Go_To_Account">Go to Account</string>
     <string name="Admin_Account">Admin Account</string>
     <string name="Employee_Account">Employee Account</string>
+    <string name="Patient_Account">Patient Account</string>
     <string name="Manage_Services">Manage Services</string>
     <string name="Manage_Employees">Manage Employees</string>
     <string name="Manage_Patients">Manage Patients</string>
@@ -80,6 +81,7 @@
     <string name="Clinic_unit">Unit/room number</string>
     <string name="Clinic_unit_hint">e.g. C302</string>
     <string name="Clinic_province_star">Province code *</string>
+    <string name="Clinic_province_code">Province code</string>
     <string name="Clinic_province_hint">e.g. ON</string>
     <string name="Clinic_city_star">City *</string>
     <string name="Clinic_city_hint">City name</string>
@@ -91,6 +93,22 @@
     <string name="Clinic_payment_hint">e.g. Debit, Credit, Cash</string>
     <string name="Password_with_restrictions_star">Password (6 to 12 characters) *</string>
     <string name="Time_format">00:00</string>
+    <string name="Remote_check_in">Remote Check-In</string>
+    <string name="Remote_check_in_to_clinic">Remote check-in to this clinic</string>
+    <string name="Scheduled_appointments">Scheduled Appointments</string>
+    <string name="New_appointment">Schedule a new appointment</string>
+    <string name="Schedule_appointment_at_clinic">Schedule a new appointment at this clinic</string>
+    <string name="Expected_wait">Your expected waiting time is:</string>
+    <string name="Current_expected_waiting_time">Expected waiting time:</string>
+    <string name="Not_on_Waiting_List">You are not currently on the waiting list\n of any clinic.</string>
+    <string name="On_Waiting_List">You are currently on the waiting list\n of the following clinic.</string>
+    <string name="Clinic_info">Clinic Info</string>
+    <string name="Clinic_search">Search for a clinic</string>
+    <string name="ClinicSearch">Clinic Search</string>
+    <string name="Clinic_search_by_location">Search for clinic by location</string>
+    <string name="Clinic_search_by_service">Search for clinics offering this service</string>
+    <string name="Clinic_search_currently_open">Search for currently open clinics</string>
+    <string name="New_Search">New Search</string>
     <string-array name="account_type_array">
         <item>Patient</item>
         <item>Employee</item>

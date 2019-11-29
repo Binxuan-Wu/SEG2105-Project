@@ -48,5 +48,8 @@ public class Address {
         return sb.toString();
     }
 
-
+    // method to determine if the address is in a specific city and province
+    public boolean isAtLocation(String cityName, String provinceCode) {
+        return cityName.equals(this.city) && provinceCode.equals(this.province);
+    }
 }

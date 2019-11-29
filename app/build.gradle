@@ -5,7 +5,8 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.ysteimle.segproject.easywalkin"
-        minSdkVersion 26 // to be able to use the UTF-8 standard Charset during password hashing and java.time
+        minSdkVersion 26
+        // to be able to use the UTF-8 standard Charset during password hashing and java.time
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

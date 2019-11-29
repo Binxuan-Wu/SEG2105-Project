@@ -40,12 +40,14 @@ public class EmployeeAccountActivity extends AppCompatActivity {
     private ValueEventListener mClinicIdListener;
     private ValueEventListener mAvailableServicesListener;
 
+    // database constants (note: moved to DBHelper class; should replace with static variables from
+    // that class)
     private final String clinicOfEmployeePath = "ClinicOfEmployee";
     private final String clinicListPath = "ClinicList";
     private final String servicesPath = "Services";
     private final String noClinicMsg = "None";
 
-    //private EmployeeAccount employeeAccount;
+    // Employee account-related objects stored here
     private String employeeUserId;
     private String clinicId;
     private Clinic clinic;
@@ -90,7 +92,6 @@ public class EmployeeAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_account);
-
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
@@ -208,10 +209,10 @@ public class EmployeeAccountActivity extends AppCompatActivity {
         }
     }
 
-    public void getClinicInfo(String id) {
+    public void getClinicInfo(String clinicIdToSearch) {
         //final String clinicIdForDB = id;
 
-        if (id.equals(noClinicMsg)) {
+        if (clinicIdToSearch.equals(noClinicMsg)) {
             // no clinic set up
             clinicInfoTitleView.setText(R.string.No_clinic_msg);
             clinicInfoTitleView.setOnClickListener(new View.OnClickListener() {
@@ -237,7 +238,7 @@ public class EmployeeAccountActivity extends AppCompatActivity {
 
         } else {
             // get reference to clinic in ClinicList in database and attach a value event listener
-            mReference.child(clinicListPath).child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            mReference.child(clinicListPath).child(clinicIdToSearch).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Clinic clinicFromDB = dataSnapshot.getValue(Clinic.class);
@@ -267,22 +268,22 @@ public class EmployeeAccountActivity extends AppCompatActivity {
         // update stored clinic
         clinic = clinicToDisplay;
         // clinic information
-        clinicNameView.setText(String.format("Name: %s", clinicToDisplay.clinicName));
-        clinicAddressView.setText(String.format("Address: %s", clinicToDisplay.clinicAddress.printFormat()));
-        clinicPhoneView.setText(String.format("Phone number: %s", clinicToDisplay.phone));
-        clinicInsuranceView.setText(String.format("Accepted insurance types: %s", clinicToDisplay.insuranceTypes));
-        clinicPaymentView.setText(String.format("Accepted payment methods: %s", clinicToDisplay.paymentMethods));
+        clinicNameView.setText(String.format("Name: %s", clinic.clinicName));
+        clinicAddressView.setText(String.format("Address: %s", clinic.clinicAddress.printFormat()));
+        clinicPhoneView.setText(String.format("Phone number: %s", clinic.phone));
+        clinicInsuranceView.setText(String.format("Accepted insurance types: %s", clinic.insuranceTypes));
+        clinicPaymentView.setText(String.format("Accepted payment methods: %s", clinic.paymentMethods));
         // working hours
-        mondayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(1));
-        tuesdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(2));
-        wednesdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(3));
-        thursdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(4));
-        fridayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(5));
-        saturdayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(6));
-        sundayView.setText(clinicToDisplay.getOpenTimePrintFormatForDay(7));
+        mondayView.setText(clinic.getOpenTimePrintFormatForDay(1));
+        tuesdayView.setText(clinic.getOpenTimePrintFormatForDay(2));
+        wednesdayView.setText(clinic.getOpenTimePrintFormatForDay(3));
+        thursdayView.setText(clinic.getOpenTimePrintFormatForDay(4));
+        fridayView.setText(clinic.getOpenTimePrintFormatForDay(5));
+        saturdayView.setText(clinic.getOpenTimePrintFormatForDay(6));
+        sundayView.setText(clinic.getOpenTimePrintFormatForDay(7));
 
         // list of selected services
-        if (clinicToDisplay.serviceIdList.size() >= 1) {
+        if (clinic.serviceIdList.size() >= 1) {
             selectedServicesAdapter = new ServiceAdapter(editVersion, new ServiceAdapter.OnServiceClickListener() {
                 @Override
                 public void onServiceClick(Service service) {
@@ -459,6 +460,7 @@ public class EmployeeAccountActivity extends AppCompatActivity {
 
     // method to retrieve clinic id from database and set the clinicId instance variable accordingly
     // note that this will only work if the employeeUserId has been initialised properly beforehand
+    // We do this via a Value Event Listener instead
     public void retrieveClinicIdFromDB (String employeeId) {
         DatabaseReference clinicReference = mReference.child(clinicOfEmployeePath).child(employeeId);
 
@@ -481,6 +483,7 @@ public class EmployeeAccountActivity extends AppCompatActivity {
 
     // Method to retrieve and return list of Service objects corresponding to the ids in the
     // clinic.serviceIdList from the database
+    // We won't do this, but rather use the method below instead.
     public void getSelectedServicesFromDB () {
         if (clinic.serviceIdList.size() >= 1) {
             DatabaseReference servicesReference = mReference.child(servicesPath);
@@ -501,16 +504,55 @@ public class EmployeeAccountActivity extends AppCompatActivity {
             }
         }
     }
-    // or maybe just get them from the availableServicesInDB list?
+
+    // Method to retrieve and return list of Service objects corresponding to the ids in the
+    // clinic.serviceIdList from the availableServicesInDB list
+    // Instead of removing serviceId from clinic in database if service has been removed by admin,
+    // admin should remove serviceId from all clinics
+    // I try to update clinic in database in method below, app crashes when we try to open EmployeeAccountActivity
     public void getSelectedServices () {
         selectedServices.clear();
+        //boolean serviceRemoved = false;
         if (clinic.serviceIdList.size() >= 1) {
-            for (Service service : availableServicesInDB) {
+            /*for (Service service : availableServicesInDB) {
                 if (clinic.serviceIdList.contains(service.id)) {
                     selectedServices.add(service);
                 }
+            }*/
+            for (String Id : clinic.serviceIdList) {
+                // find the Service object with this id in the list of services that are in the DB
+                Service service = findServiceById(Id, availableServicesInDB);
+                if (service != null) {
+                    // if this service indeed exists in the database, add it to the list of
+                    // selected services
+                    selectedServices.add(service);
+                } /*else {
+                    // this Service is no longer in the DB (the admin user must have deleted it)
+                    // so, remove it from the clinic.serviceIdList
+                    clinic.removeService(Id);
+                    // we now need to update the clinic in the database
+                    serviceRemoved = true;
+                }*/
+            }
+            /*if (serviceRemoved) {
+                // at least one service has been removed, so we need to update the clinic in the
+                // database
+                mReference.child(clinicListPath).child(clinicId).setValue(clinic);
+            }*/
+        }
+    }
+
+    // method to search for a Service having a given id attribute in a list of Service objects
+    // this method assumes that the Service objects in the provided list all have distinct id's
+    // method returns null if no Service in the list has the given id
+    public Service findServiceById (String idToSearch, List<Service> listToSearch) {
+        Service result = null;
+        for (Service service : listToSearch) {
+            if (service.id.equals(idToSearch)) {
+                result = service;
             }
         }
+        return result;
     }
 
     public void workingHoursEditBtnOnClick (View view) {

@@ -27,6 +27,7 @@ public class OpenTime {
         this.CT = closingTime;
     }
 
+    // method to determine if a given string represents a valid time
     @Exclude
     public static boolean validTime(String input) {
         if (!input.isEmpty()) {
@@ -64,8 +65,28 @@ public class OpenTime {
         return sb.toString();
     }
 
+    // method to determine if a given integer is a valid day code
     @Exclude
     public static boolean validDayCode (int i) {
         return (i >= 1 && i <= 7);
+    }
+
+    // Method to determine if this object represents a day when clinic is closed
+    // assumes isValid() is true
+    public boolean isClosedAllDay() {
+        return (OT == null && CT == null) ||
+                (OT != null && CT != null && ((OT.isEmpty() && CT.isEmpty())));
+    }
+
+    // Method to determine if a given time is between the opening time OT and the closing time CT
+    @Exclude
+    public boolean isOpenAtTime (String time) {
+        if (isValid() && !isClosedAllDay() && validTime(time)){
+            LocalTime searchedTime = LocalTime.parse(time);
+            return LocalTime.parse(OT).isBefore(searchedTime) && searchedTime.isBefore(LocalTime.parse(CT));
+        } else {
+            // clinic is closed on this day or given time is not valid or OpenTime object is not valid
+            return false;
+        }
     }
 }

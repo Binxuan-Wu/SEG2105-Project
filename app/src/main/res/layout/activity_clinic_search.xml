@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="32dp"
+    tools:context=".ClinicSearchActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/ClinicSearchTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/ClinicSearch"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/ClinicSearchCurrentlyOpenBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="onSearchOpenClinicsClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Clinic_search_currently_open"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchTitle" />
+
+        <EditText
+            android:id="@+id/ClinicSearchCityEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/Clinic_city_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchCurrentlyOpenBtn" />
+
+        <EditText
+            android:id="@+id/ClinicSearchProvinceEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/Clinic_province_code"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchCityEdit" />
+
+        <Button
+            android:id="@+id/ClinicSearchByLocationBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="onSearchClinicsByLocationClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Clinic_search_by_location"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchProvinceEdit" />
+
+        <EditText
+            android:id="@+id/ClinicSearchServiceEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/Service_name"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchByLocationBtn" />
+
+        <Button
+            android:id="@+id/ClinicSearchByServiceBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Clinic_search_by_service"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchServiceEdit" />
+
+        <androidx.constraintlayout.widget.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ClinicSearchFieldsGroup"
+            app:constraint_referenced_ids="ClinicSearchCurrentlyOpenBtn,ClinicSearchCityEdit,ClinicSearchProvinceEdit,ClinicSearchByLocationBtn,ClinicSearchServiceEdit,ClinicSearchByServiceBtn"/>
+
+        <Button
+            android:id="@+id/NewClinicSearchBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_orange_light"
+            android:onClick="newSearchOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/New_Search"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchByServiceBtn" />
+
+        <TextView
+            android:id="@+id/SearchResultClinicInfoTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/Clinic_Info"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/NewClinicSearchBtn" />
+
+        <TextView
+            android:id="@+id/SearchResultNameView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultClinicInfoTitle" />
+
+        <TextView
+            android:id="@+id/SearchResultAddressView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultNameView" />
+
+        <TextView
+            android:id="@+id/SearchResultPhoneView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultAddressView" />
+
+        <TextView
+            android:id="@+id/SearchResultInsuranceView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultPhoneView" />
+
+        <TextView
+            android:id="@+id/SearchResultPaymentView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultInsuranceView" />
+
+        <TextView
+            android:id="@+id/SearchResultWaitingTimeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/Current_expected_waiting_time"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultPaymentView" />
+
+        <TextView
+            android:id="@+id/SearchResultWaitingTimeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultWaitingTimeTitle"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultWaitingTimeTitle" />
+
+        <TextView
+            android:id="@+id/SearchResultWorkingHoursTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/Hours_of_operation"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultWaitingTimeTitle" />
+
+        <TextView
+            android:id="@+id/SearchResultMondayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/Monday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultWorkingHoursTitle" />
+
+        <TextView
+            android:id="@+id/SearchResultTuesdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Tuesday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultMondayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultWednesdayDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Wednesday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultTuesdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultThursdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Thursday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultWednesdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultFridayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Friday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultThursdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultSaturdayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Saturday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultFridayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultSundayDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/Sunday"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultSaturdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultMondayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultMondayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultMondayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultTuesdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultTuesdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultTuesdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultWednesdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultWednesdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultWednesdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultThursdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultThursdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultThursdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultFridayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultFridayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultFridayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultSaturdayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultSaturdayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultSaturdayDesc" />
+
+        <TextView
+            android:id="@+id/SearchResultSundayView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/SearchResultSundayDesc"
+            app:layout_constraintBaseline_toBaselineOf="@+id/SearchResultSundayDesc" />
+
+
+        <TextView
+            android:id="@+id/SearchResultServicesOfferedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/Services_offered"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultSundayDesc"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/SearchResultServicesView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultServicesOfferedTitle"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/AddToWaitingListBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/holo_orange_light"
+            android:onClick="checkInBtnOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Remote_check_in_to_clinic"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SearchResultServicesView" />
+
+        <Button
+            android:id="@+id/CancelSearchBtn"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/holo_red_light"
+            android:onClick="cancelBtnOnClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/Cancel"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AddToWaitingListBtn" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/ClinicSearchResultGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="SearchResultWaitingTimeTitle,SearchResultWaitingTimeView,AddToWaitingListBtn,SearchResultServicesView,NewClinicSearchBtn,SearchResultServicesView,SearchResultWorkingHoursTitle,SearchResultPhoneView,SearchResultFridayView,SearchResultSundayDesc,SearchResultWednesdayDesc,SearchResultNameView,SearchResultInsuranceView,SearchResultSaturdayView,SearchResultSaturdayDesc,SearchResultThursdayView,SearchResultTuesdayView,SearchResultFridayDesc,SearchResultSundayView,SearchResultMondayDesc,SearchResultClinicInfoTitle,SearchResultServicesOfferedTitle,SearchResultTuesdayDesc,SearchResultThursdayDesc,SearchResultWednesdayView,SearchResultPaymentView,SearchResultAddressView,SearchResultMondayView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

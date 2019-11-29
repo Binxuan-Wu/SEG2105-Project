@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateJoinClinicActivity"></activity>
+        <activity android:name=".ClinicSearchActivity"></activity>
+        <activity android:name=".PatientAccountActivity" />
+        <activity android:name=".CreateJoinClinicActivity" />
         <activity android:name=".EmployeeAccountActivity" />
         <activity android:name=".ManageUsersActivity" />
         <activity android:name=".ManageServicesActivity" />
