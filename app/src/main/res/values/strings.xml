@@ -106,7 +106,7 @@
     <string name="Clinic_search">Search for a clinic</string>
     <string name="ClinicSearch">Clinic Search</string>
     <string name="Clinic_search_by_location">Search for clinic by location</string>
-    <string name="Clinic_search_by_service">Search for clinics offering this service</string>
+    <string name="Clinic_search_by_service">Search for clinics by service offered</string>
     <string name="Clinic_search_currently_open">Search for currently open clinics</string>
     <string name="New_Search">New Search</string>
     <string-array name="account_type_array">

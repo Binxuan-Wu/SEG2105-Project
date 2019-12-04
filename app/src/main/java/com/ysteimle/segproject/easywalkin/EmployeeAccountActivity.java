@@ -385,8 +385,8 @@ public class EmployeeAccountActivity extends AppCompatActivity {
     }
 
     // Method to show a dialog that will display the list of all
-    // services currently available in the database and allow the
-    // employee to choose one of them to add to the clinic
+    // services currently available in the database (that the employee has not yet added to the
+    // clinic) and allow the employee to choose one of them to add to the clinic
     public void showAddServiceDialog() {
 
         // Create dialog with appropriate layout

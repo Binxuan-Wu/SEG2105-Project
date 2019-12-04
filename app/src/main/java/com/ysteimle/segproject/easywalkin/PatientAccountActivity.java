@@ -6,7 +6,6 @@ import androidx.constraintlayout.widget.Group;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.service.autofill.Dataset;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -61,6 +60,7 @@ public class PatientAccountActivity extends AppCompatActivity {
     private TextView checkInClinicInfoView;
     private TextView checkInDateView;
     private TextView checkInWaitView;
+    private TextView checkInWaitDesc;
 
     // Views for scheduled appointments
     private Button newAppointmentBtn;
@@ -83,33 +83,6 @@ public class PatientAccountActivity extends AppCompatActivity {
         } else {
             patientUserId = mUser.getUid();
 
-            // instead, check manually
-            /*// Value event listener for which (if any) clinic's waiting list patient is on
-            ValueEventListener waitingListClinicIdListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String clinicId = (String) dataSnapshot.getValue();
-                    if (clinicId != null) {
-                        waitingListClinicId = clinicId;
-                    } else {
-                        // if patient does not have an entry in the WaitingListByPatient list in the
-                        // database, add an entry for this patient with value "None", indicating that
-                        // the patient is on no waiting list
-                        //mReference.child(DBHelper.waitingListByPatient).child(patientUserId).setValue(DBHelper.noClinicMsg);
-                        waitingListClinicId = DBHelper.noClinicMsg;
-                    }
-                    getPatientAccountInfoFromDB();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // something went wrong
-                }
-            };
-            waitingListOfPatientRef = mReference.child(DBHelper.waitingListByPatient).child(patientUserId);
-            waitingListOfPatientRef.addValueEventListener(waitingListClinicIdListener);
-            mWaitingListClinicIdListener = waitingListClinicIdListener;*/
-
             // associate variables to views on screen
             // general
             clinicSearchBtn = findViewById(R.id.PatAccSearchBtn);
@@ -123,7 +96,7 @@ public class PatientAccountActivity extends AppCompatActivity {
             checkInClinicInfoView = findViewById(R.id.CheckInClinicInfo);
             checkInDateView = findViewById(R.id.CheckInDate);
             checkInWaitView = findViewById(R.id.CheckInExpectedWaitTime);
-
+            checkInWaitDesc = findViewById(R.id.CheckInExpectedWaitMsg);
         }
     }
 
@@ -133,19 +106,8 @@ public class PatientAccountActivity extends AppCompatActivity {
 
         // display info on screen
         getPatientAccountInfoFromDB();
-        //updatePatientAccountInfo();
-        //displayPatientAccountInfo();
     }
 
-    /*@Override
-    public void onStop() {
-        super.onStop();
-
-        // remove value event listeners added to the database
-        if (mWaitingListClinicIdListener != null && waitingListOfPatientRef != null) {
-            waitingListOfPatientRef.removeEventListener(mWaitingListClinicIdListener);
-        }
-    }*/
 
     /* Methods to update information regarding waiting list status and scheduled appointment both in
        database and displayed on screen. Checks current time and date, removes all past appointments
@@ -182,15 +144,6 @@ public class PatientAccountActivity extends AppCompatActivity {
             }
         });
 
-        /*if (waitingListClinicId != null && !waitingListClinicId.equals(DBHelper.noClinicMsg)) {
-            // patient is on a waiting list
-            Toast.makeText(this,"On waiting list of clinic with id " + waitingListClinicId,Toast.LENGTH_LONG).show();
-            // get WaitEntry object from database
-
-        } else {
-            // patient not on a waiting list
-            Toast.makeText(this,"Not on a waiting list. waitingListClinicId = " + waitingListClinicId,Toast.LENGTH_LONG).show();
-        }*/
     }
 
     // method to update info (both stored and in database), based on current date and time and
@@ -266,139 +219,7 @@ public class PatientAccountActivity extends AppCompatActivity {
     }
 
     // method to update the waiting list that the patient is on
-    public void updateWaitingListOfPatient() {
-        try {
-            LocalDate today = LocalDate.now();
-            int todayCode = today.getDayOfWeek().getValue();
-            LocalTime currentTime = LocalTime.now();
-            boolean currentPatientRemoved = false;
-            int indexOfPatient = -1;
-            if (waitingListClinic != null) {
-                OpenTime todayOpenTime = waitingListClinic.getOpenTimeForDay(todayCode);
-                // get opening and closing times for today
-                LocalTime openingTime = LocalTime.parse(todayOpenTime.OT);
-                LocalTime closingTime = LocalTime.parse(todayOpenTime.CT);
-                // check that clinic is open at the moment. If not, remove everyone from waiting list.
-                if (!waitingListClinic.isOpenAtDateTime(todayCode, LocalTime.now().toString())) {
-                    // clinic is closed, so clear waiting list
-                    clearWaitingListOfPatient(waitingListOfPatient,waitingListClinicId);
-                    waitingListOfPatient.clear();
-                    // patient was removed
-                    currentPatientRemoved = true;
-                } else {
-                    // last patient must be seen 15 minutes before closing time
-                    LocalTime maxTime = closingTime.minus(15, ChronoUnit.MINUTES);
-                    // remove all entries from waiting list that are not relevant anymore
-                    // keep track of patients that were removed from waiting list
-                    List<String> removedPatientIds = new ArrayList<>();
-                    // Note: if we remove while iterating, we get a ConcurrentModificationException,
-                    // so we must use an iterator instead
-                    for (Iterator<WaitEntry> waitEntryIterator = waitingListOfPatient.iterator(); waitEntryIterator.hasNext();) {
-                        WaitEntry entry = waitEntryIterator.next();
-                        if (entry.hasValidDatesTimes()) {
-                            if (!LocalDate.parse(entry.expectedAppDate).isEqual(today)) {
-                                // the patient was on the waiting list for a day other than today, so remove entry
-                                removedPatientIds.add(entry.patientId);
-                                // remove last entry returned by iterator next() method
-                                waitEntryIterator.remove();
-                            } else {
-                                // if expected appointment date is today, must check the time
-                                if (LocalTime.parse(entry.expectedAppTime).isBefore(LocalTime.now())
-                                        || LocalTime.parse(entry.expectedAppTime).isAfter(maxTime)) {
-                                    // the patient has been seen at some earlier time today or expected
-                                    // appointment time is after the last time a patient can be seen,
-                                    // so remove entry
-                                    removedPatientIds.add(entry.patientId);
-                                    // remove last entry returned by iterator next() method
-                                    waitEntryIterator.remove();
-                                }
-                            }
-                        } else {
-                            // entry is not valid, so remove it
-                            removedPatientIds.add(entry.patientId);
-                            // remove last entry returned by iterator next() method
-                            waitEntryIterator.remove();
-                        }
-                    }
-
-                    if (!waitingListOfPatient.isEmpty()) {
-                        // sort the waitEntries according to expected appointment time
-                        waitingListOfPatient.sort(waitEntryComparator);
-
-                        // find expected appointment time of first entry in list and set all the other expected
-                        // times accordingly, counting a default of 15 minutes per patient
-                        LocalTime startTime = LocalTime.parse(waitingListOfPatient.get(0).expectedAppTime);
-                        // check if current user is first in list
-                        if (waitingListOfPatient.get(0).patientId.equals(patientUserId)) {
-                            indexOfPatient = 0;
-                        }
-                        for (int i = 1; i < waitingListOfPatient.size(); i++) {
-                            // number of minutes to add to startTime
-                            int addedMinutes = i * 15;
-                            WaitEntry currentEntry = waitingListOfPatient.get(i);
-                            LocalTime newTime = startTime.plus(addedMinutes, ChronoUnit.MINUTES);
-                            waitingListOfPatient.get(i).setExpectedAppTime(newTime.toString());
-
-                            // check if current user is at this index in list
-                            if (currentEntry.patientId.equals(patientUserId)) {
-                                indexOfPatient = i;
-                            }
-                        }
-
-                        // update waiting list in database
-                        DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(waitingListClinicId);
-                        // remove old waiting list
-                        waitingListOfClinicRef.removeValue();
-                        // add updated waiting list
-                        for (WaitEntry entry : waitingListOfPatient) {
-                            waitingListOfClinicRef.child(entry.entryId).setValue(entry);
-                        }
-
-                        // update status of patients whose WaitEntries were removed
-                        for (String removedId : removedPatientIds) {
-                            // check if current patient was removed
-                            if (removedId.equals(patientUserId)) {
-                                currentPatientRemoved = true;
-                            }
-                            mReference.child(DBHelper.waitingListByPatient).child(removedId).setValue(DBHelper.noClinicMsg);
-                        }
-                    } else {
-                        // waiting list is empty, so patient cannot possibly be on it
-                        mReference.child(DBHelper.waitingListByPatient).child(patientUserId).setValue(DBHelper.noClinicMsg);
-                        currentPatientRemoved = true;
-                    }
-                }
-
-                if (currentPatientRemoved) {
-                    // patient not on waiting list
-                    displayNoWaitingListInfo();
-                } else {
-                    // patient is on the waiting list of the selected clinic, so display the info
-                    if (indexOfPatient == -1) {
-                        // something went wrong
-                        Toast.makeText(getApplicationContext(), "Error: Could not find your entry in the waiting list.", Toast.LENGTH_LONG).show();
-                        displayNoWaitingListInfo("Error: Could not find your entry in the waiting list.");
-                    } else {
-                        WaitEntry userWaitEntry = waitingListOfPatient.get(indexOfPatient);
-                        displayWaitingListInfo(userWaitEntry);
-                    }
-                }
-
-            } else {
-                // we did not manage to retrieve the clinic object from the database
-                // display no waiting list info
-                displayNoWaitingListInfo("Error: Could not retrieve clinic object from database");
-            }
-
-        } catch (Exception e) {
-            // something went wrong
-            Toast.makeText(getApplicationContext(), "Error: Could not update waiting list of patient properly.", Toast.LENGTH_LONG).show();
-            displayNoWaitingListInfo("Error: Could not update waiting list of patient properly due to:\n " + e.toString());
-        }
-    }
-
-    // method to update the waiting list that the patient is on
-    // this time with passed parameters
+    // with passed parameters (although that is probably not necessary)
     public void updateWaitingListOfPatient(Clinic waitingListClinic, List<WaitEntry> waitingListOfPatient) {
         try {
             StringBuilder errorMsg = new StringBuilder();
@@ -410,7 +231,6 @@ public class PatientAccountActivity extends AppCompatActivity {
             if (waitingListClinic != null) {
                 OpenTime todayOpenTime = waitingListClinic.getOpenTimeForDay(todayCode);
                 // get opening and closing times for today
-                LocalTime openingTime = LocalTime.parse(todayOpenTime.OT);
                 LocalTime closingTime = LocalTime.parse(todayOpenTime.CT);
                 // check that clinic is open at the moment. If not, remove everyone from waiting list.
                 if (!waitingListClinic.isOpenAtDateTime(todayCode, LocalTime.now().toString())) {
@@ -421,9 +241,9 @@ public class PatientAccountActivity extends AppCompatActivity {
                     currentPatientRemoved = true;
                     errorMsg.append("Clinic currently closed.");
                 } else {
-                    // last patient must be seen 15 minutes before closing time
-                    LocalTime maxTime = closingTime.minus(15, ChronoUnit.MINUTES);
-                    // remove all entries from waiting list that are not relevant anymore
+                    // last patient must be finished before closing time
+                    // remove all entries from waiting list that are not relevant anymore (we only
+                    // remove them once the expected appointment END time is in the past)
                     // keep track of patients that were removed from waiting list
                     List<String> removedPatientIds = new ArrayList<>();
                     // Note: if we remove while iterating, we get a ConcurrentModificationException,
@@ -438,11 +258,10 @@ public class PatientAccountActivity extends AppCompatActivity {
                                 waitEntryIterator.remove();
                             } else {
                                 // if expected appointment date is today, must check the time
-                                if (LocalTime.parse(entry.expectedAppTime).isBefore(LocalTime.now())
-                                        || LocalTime.parse(entry.expectedAppTime).isAfter(maxTime)) {
+                                if (LocalTime.parse(entry.expectedAppEndTime).isBefore(LocalTime.now())
+                                        || LocalTime.parse(entry.expectedAppEndTime).isAfter(closingTime)) {
                                     // the patient has been seen at some earlier time today or expected
-                                    // appointment time is after the last time a patient can be seen,
-                                    // so remove entry
+                                    // appointment time ends after clinic is closed, so remove entry
                                     removedPatientIds.add(entry.patientId);
                                     // remove last entry returned by iterator next() method
                                     waitEntryIterator.remove();
@@ -451,7 +270,9 @@ public class PatientAccountActivity extends AppCompatActivity {
                         } else {
                             // entry is not valid, so remove it
                             removedPatientIds.add(entry.patientId);
-                            errorMsg.append("WaitEntry for current patient does not have valid dates/times. ");
+                            errorMsg.append("WaitEntry for patient with id ");
+                            errorMsg.append(entry.patientId);
+                            errorMsg.append(" does not have valid dates/times. ");
                             // remove last entry returned by iterator next() method
                             waitEntryIterator.remove();
                         }
@@ -461,19 +282,39 @@ public class PatientAccountActivity extends AppCompatActivity {
                         // sort the waitEntries according to expected appointment time
                         waitingListOfPatient.sort(waitEntryComparator);
 
-                        // find expected appointment time of first entry in list and set all the other expected
-                        // times accordingly, counting a default of 15 minutes per patient
-                        LocalTime startTime = LocalTime.parse(waitingListOfPatient.get(0).expectedAppTime);
+                        // find expected appointment end time of first entry in list
+                        // all the other expected times will be set accordingly, counting a default of
+                        // 15 minutes per patient
+                        LocalTime firstEndTime = LocalTime.parse(waitingListOfPatient.get(0).expectedAppEndTime);
+
+                        // the first patient on the waiting list should either be currently being seen
+                        // or should be seen within a minute or two from now. Otherwise, some other patient(s)
+                        // that used to be on the waiting list before the patient that is currently
+                        // first cancelled their appointment. In this case, we need to update
+                        // the time of the first patient so that they can be seen immediately
+                        // (it is not possible that some other patient is currently being seen as
+                        // otherwise their waiting list entry would still be on the list because their
+                        // expected appointment end time would not yet have passed)
+                        if (LocalTime.now().plus(17, ChronoUnit.MINUTES).isBefore(firstEndTime)) {
+                            // we need to update expected times for first patient in waiting list
+                            // by default, they will be seen 2 minutes from now
+                            LocalTime newStartTime = LocalTime.now().plus(2,ChronoUnit.MINUTES);
+                            LocalTime newEndTime = newStartTime.plus(15,ChronoUnit.MINUTES);
+                            waitingListOfPatient.get(0).setExpectedAppTimes(newStartTime.toString(),newEndTime.toString());
+
+                            // reset firstEndTime
+                            firstEndTime = newEndTime;
+                        }
                         // check if current user is first in list
                         if (waitingListOfPatient.get(0).patientId.equals(patientUserId)) {
                             indexOfPatient = 0;
                         }
+
                         for (int i = 1; i < waitingListOfPatient.size(); i++) {
-                            // number of minutes to add to startTime
-                            int addedMinutes = i * 15;
                             WaitEntry currentEntry = waitingListOfPatient.get(i);
-                            LocalTime newTime = startTime.plus(addedMinutes, ChronoUnit.MINUTES);
-                            waitingListOfPatient.get(i).setExpectedAppTime(newTime.toString());
+                            // the current entry has expected start time equal to expected end time of previous entry
+                            String newStartTime = waitingListOfPatient.get(i-1).expectedAppEndTime;
+                            waitingListOfPatient.get(i).setExpectedAppStartTime(newStartTime);
 
                             // check if current user is at this index in list
                             if (currentEntry.patientId.equals(patientUserId)) {
@@ -505,10 +346,15 @@ public class PatientAccountActivity extends AppCompatActivity {
                         DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(waitingListClinicId);
                         // remove old waiting list
                         waitingListOfClinicRef.removeValue();
-                        // update reference to clinic in database
+                        // update reference to clinic in database for the current user
                         mReference.child(DBHelper.waitingListByPatient).child(patientUserId).setValue(DBHelper.noClinicMsg);
                         currentPatientRemoved = true;
                         errorMsg.append("Waiting list was emptied. ");
+
+                        // update status of the other patients whose WaitEntries were removed (if any)
+                        for (String removedId : removedPatientIds) {
+                            mReference.child(DBHelper.waitingListByPatient).child(removedId).setValue(DBHelper.noClinicMsg);
+                        }
                     }
                 }
 
@@ -520,7 +366,7 @@ public class PatientAccountActivity extends AppCompatActivity {
                     // patient is on the waiting list of the selected clinic, so display the info
                     if (indexOfPatient == -1) {
                         // something went wrong
-                        Toast.makeText(getApplicationContext(), "Error: Could not find your entry in the waiting list.", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Error: Could not find your entry in the waiting list.", Toast.LENGTH_LONG).show();
                         displayNoWaitingListInfo("Error: Could not find your entry in the waiting list.");
                     } else {
                         WaitEntry userWaitEntry = waitingListOfPatient.get(indexOfPatient);
@@ -577,23 +423,34 @@ public class PatientAccountActivity extends AppCompatActivity {
     public void displayWaitingListInfo(WaitEntry userWaitEntry) {
         // store the waitEntry object we are displaying
         currentWaitEntry = userWaitEntry;
+        // we will display the clinic info
         checkInGroup.setVisibility(View.VISIBLE);
-        checkInMsgView.setText(R.string.On_Waiting_List);
-        // compute and display waiting time
-        try {
-            // compute waiting time
-            LocalTime expectedTime = LocalTime.parse(userWaitEntry.expectedAppTime);
-            int expectedWait = (int) LocalTime.now().until(expectedTime,ChronoUnit.MINUTES);
-            // display waiting time
-            checkInWaitView.setText(String.format("%d minutes",expectedWait));
-        } catch (DateTimeParseException e) {
-            // could not parse expected appointment time properly
-            checkInWaitView.setText("Error");
-        }
         // display clinic info
         checkInClinicInfoView.setText(waitingListClinic.getClinicInfo());
         // date of check-in
         checkInDateView.setText(userWaitEntry.expectedAppDate);
+        // check if current user's appointment time is in the future or if it is right now (i.e. the
+        // current time is between expectedAppStartTime and expectedAppEndTime)
+        if (currentWaitEntry.isNow()) {
+            checkInMsgView.setText("It is now your turn to be seen. Please proceed immediately to the reception.");
+            checkInWaitDesc.setText("");
+            checkInWaitView.setText("");
+        } else {
+            checkInMsgView.setText(R.string.On_Waiting_List);
+            // compute and display waiting time
+            try {
+                // compute waiting time
+                LocalTime expectedTime = LocalTime.parse(userWaitEntry.expectedAppStartTime);
+                int expectedWait = (int) LocalTime.now().until(expectedTime, ChronoUnit.MINUTES);
+                // display waiting time
+                checkInWaitDesc.setText(R.string.Expected_wait);
+                checkInWaitView.setText(String.format("%d minutes", expectedWait));
+            } catch (DateTimeParseException e) {
+                // could not parse expected appointment time properly
+                checkInWaitDesc.setText("Error: Could not determine waiting time.");
+                checkInWaitView.setText("");
+            }
+        }
     }
 
     // old method
@@ -610,15 +467,6 @@ public class PatientAccountActivity extends AppCompatActivity {
 
     // onClick method for the search button
     public void goToSearchClinicActivity(View view) {
-        /*Intent searchIntent = new Intent(this,ClinicSearchActivity.class);
-        // add info to intent to say if patient can check-in to a clinic or not
-        // (i.e. is on a waiting list or not)
-        if (waitingListClinicId.equals(DBHelper.noClinicMsg)) {
-            searchIntent.putExtra("canCheckIn",true);
-        } else {
-            searchIntent.putExtra("canCheckIn",false);
-        }
-        startActivity(searchIntent);*/
         startActivity(new Intent(this,ClinicSearchActivity.class));
     }
 
@@ -644,6 +492,6 @@ public class PatientAccountActivity extends AppCompatActivity {
 
             Toast.makeText(getApplicationContext(), "Successfully removed from waiting list.", Toast.LENGTH_LONG).show();
         }
-        // otherwise: patient already remove from waiting list, do nothing
+        // otherwise: patient already removed from waiting list, do nothing
     }
 }

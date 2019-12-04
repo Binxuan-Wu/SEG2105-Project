@@ -84,40 +84,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ClinicSearchProvinceEdit" />
 
-        <EditText
-            android:id="@+id/ClinicSearchServiceEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:hint="@string/Service_name"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchByLocationBtn" />
-
         <Button
             android:id="@+id/ClinicSearchByServiceBtn"
             style="@android:style/Widget.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:background="@android:color/holo_blue_light"
+            android:onClick="onSearchByServiceOfferedClick"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="@string/Clinic_search_by_service"
             android:textColor="@android:color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchServiceEdit" />
+            app:layout_constraintTop_toBottomOf="@+id/ClinicSearchByLocationBtn" />
 
         <androidx.constraintlayout.widget.Group
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ClinicSearchFieldsGroup"
-            app:constraint_referenced_ids="ClinicSearchCurrentlyOpenBtn,ClinicSearchCityEdit,ClinicSearchProvinceEdit,ClinicSearchByLocationBtn,ClinicSearchServiceEdit,ClinicSearchByServiceBtn"/>
+            app:constraint_referenced_ids="ClinicSearchCurrentlyOpenBtn,ClinicSearchCityEdit,ClinicSearchProvinceEdit,ClinicSearchByLocationBtn,ClinicSearchByServiceBtn"/>
 
         <Button
             android:id="@+id/NewClinicSearchBtn"
@@ -442,7 +429,7 @@
             android:id="@+id/ClinicSearchResultGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="SearchResultWaitingTimeTitle,SearchResultWaitingTimeView,AddToWaitingListBtn,SearchResultServicesView,NewClinicSearchBtn,SearchResultServicesView,SearchResultWorkingHoursTitle,SearchResultPhoneView,SearchResultFridayView,SearchResultSundayDesc,SearchResultWednesdayDesc,SearchResultNameView,SearchResultInsuranceView,SearchResultSaturdayView,SearchResultSaturdayDesc,SearchResultThursdayView,SearchResultTuesdayView,SearchResultFridayDesc,SearchResultSundayView,SearchResultMondayDesc,SearchResultClinicInfoTitle,SearchResultServicesOfferedTitle,SearchResultTuesdayDesc,SearchResultThursdayDesc,SearchResultWednesdayView,SearchResultPaymentView,SearchResultAddressView,SearchResultMondayView" />
+            app:constraint_referenced_ids="SearchResultWaitingTimeTitle,SearchResultWaitingTimeView,SearchResultServicesView,NewClinicSearchBtn,SearchResultServicesView,SearchResultWorkingHoursTitle,SearchResultPhoneView,SearchResultFridayView,SearchResultSundayDesc,SearchResultWednesdayDesc,SearchResultNameView,SearchResultInsuranceView,SearchResultSaturdayView,SearchResultSaturdayDesc,SearchResultThursdayView,SearchResultTuesdayView,SearchResultFridayDesc,SearchResultSundayView,SearchResultMondayDesc,SearchResultClinicInfoTitle,SearchResultServicesOfferedTitle,SearchResultTuesdayDesc,SearchResultThursdayDesc,SearchResultWednesdayView,SearchResultPaymentView,SearchResultAddressView,SearchResultMondayView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

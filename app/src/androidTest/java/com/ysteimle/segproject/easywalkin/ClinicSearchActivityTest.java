@@ -45,14 +45,28 @@ public class ClinicSearchActivityTest {
     }
 
     @Test
-    public void waitingTimeTest() {
-        LocalTime current = LocalTime.now();
-        LocalTime inFifteenMins = current.plus(15,ChronoUnit.MINUTES);
-        LocalTime inHalfHour = current.plus(30,ChronoUnit.MINUTES);
-        int waitTime1 = mActivity.getExpectedWaitingTime(inFifteenMins);
-        assertTrue(waitTime1 >= 29 && waitTime1 <= 30);
-        int waitTime2 = mActivity.getExpectedWaitingTime(inHalfHour);
-        assertTrue(waitTime2 >= 44 && waitTime2 <= 45);
+    public void startTest() {
+        onView(withText(R.string.Clinic_search_currently_open)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void searchCurrentOpenTest() {
+        onView(withId(R.id.ClinicSearchCurrentlyOpenBtn)).perform(click());
+        onView(withId(R.id.searchResultsActionMsg)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void searchByService() {
+        onView(withId(R.id.ClinicSearchByServiceBtn)).perform(click());
+        onView(withText("Select the desired service below to search for clinics offering this service.")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void searchByLocationBtn() {
+        onView(withId(R.id.ClinicSearchCityEdit)).perform(typeText("Ottawa"),closeSoftKeyboard());
+        onView(withId(R.id.ClinicSearchProvinceEdit)).perform(typeText("ON"),closeSoftKeyboard());
+        onView(withId(R.id.ClinicSearchByLocationBtn)).perform(click());
+        onView(withText("Desmarais Clinic")).check(matches(isDisplayed()));
     }
 
     // Note: this test will only work if there is currently a unique open clinic

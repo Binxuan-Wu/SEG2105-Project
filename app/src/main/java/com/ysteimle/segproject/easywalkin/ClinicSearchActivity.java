@@ -39,14 +39,17 @@ public class ClinicSearchActivity extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
     private ValueEventListener mClinicListener;
+    private ValueEventListener mServiceListener;
 
     // for search
     private InputValidator iv = new InputValidator();
+    // all available services in DB
+    private List<Service> servicesInDB = new ArrayList<>();
+    private static final int selectServiceVersion = 1;
     // all available clinics in DB
     private List<Clinic> clinicsInDB = new ArrayList<>();
     // for recycler showing list of clinics matching search term
     private final int selectClinic = 1;
-    private Clinic selectedClinic;
 
     // for clinic id where user is currently on waiting list
     private String currentUserId;
@@ -55,13 +58,15 @@ public class ClinicSearchActivity extends AppCompatActivity {
 
     // for search results
     private List<WaitEntry> waitingListOfSelectedClinic = new ArrayList<>();
+    // displayed clinic
+    private Clinic selectedClinic;
+    private boolean canCheckInToSelectedClinic;
 
     // Variables for the views on screen
     // search fields
     private Group searchFieldsGroup;
     private EditText citySearchEdit;
     private EditText provinceSearchEdit;
-    private EditText serviceSearchEdit;
     // search results
     private Group searchResultGroup;
     private TextView clinicNameView;
@@ -110,7 +115,6 @@ public class ClinicSearchActivity extends AppCompatActivity {
             searchFieldsGroup.setVisibility(View.VISIBLE); // we want to search, so search fields should be visible
             citySearchEdit = findViewById(R.id.ClinicSearchCityEdit);
             provinceSearchEdit = findViewById(R.id.ClinicSearchProvinceEdit);
-            serviceSearchEdit = findViewById(R.id.ClinicSearchServiceEdit);
 
             // search result views
             searchResultGroup = findViewById(R.id.ClinicSearchResultGroup);
@@ -133,7 +137,9 @@ public class ClinicSearchActivity extends AppCompatActivity {
             sundayView = findViewById(R.id.SearchResultSundayView);
             checkInBtn = findViewById(R.id.AddToWaitingListBtn);
 
-            searchResultGroup.setVisibility(View.GONE); // we have not searched yet, so search results should not be visible
+            // we have not searched yet, so search results should not be visible
+            searchResultGroup.setVisibility(View.GONE);
+            checkInBtn.setVisibility(View.GONE);
 
             // value event listener for the clinic id of the waiting list the patient is on
             ValueEventListener waitingListClinicIdListener = new ValueEventListener() {
@@ -145,7 +151,7 @@ public class ClinicSearchActivity extends AppCompatActivity {
                     } else {
                         currentWaitingListClinicId = DBHelper.noClinicMsg;
                     }
-                    Toast.makeText(getApplicationContext(), "Currently on waiting list of clinic with id " + currentWaitingListClinicId, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Currently on waiting list of clinic with id " + currentWaitingListClinicId, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -176,6 +182,27 @@ public class ClinicSearchActivity extends AppCompatActivity {
             };
             mReference.child(DBHelper.clinicListPath).addValueEventListener(clinicListener);
             mClinicListener = clinicListener;
+
+            // value event listener to find all available services in the database
+            ValueEventListener serviceListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    servicesInDB.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        Service service = snapshot.getValue(Service.class);
+                        if (service != null) {
+                            servicesInDB.add(service);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            mReference.child(DBHelper.servicesPath).addValueEventListener(serviceListener);
+            mServiceListener = serviceListener;
         }
     }
 
@@ -190,6 +217,10 @@ public class ClinicSearchActivity extends AppCompatActivity {
 
         if (mClinicIdListener != null && currentUserId != null) {
             mReference.child(DBHelper.waitingListByPatient).child(currentUserId).removeEventListener(mClinicIdListener);
+        }
+
+        if (mServiceListener != null) {
+            mReference.child(DBHelper.servicesPath).removeEventListener(mServiceListener);
         }
     }
 
@@ -328,18 +359,35 @@ public class ClinicSearchActivity extends AppCompatActivity {
         saturdayView.setText(selectedClinic.getOpenTimePrintFormatForDay(6));
         sundayView.setText(selectedClinic.getOpenTimePrintFormatForDay(7));
 
-        // for now, don't display services offered
-        servicesDesc.setVisibility(View.GONE);
-        servicesView.setVisibility(View.GONE);
+        // display services offered
+        try {
+            StringBuilder servicesOffered = new StringBuilder();
+            if (selectedClinic.serviceIdList.isEmpty()) {
+                servicesOffered.append("This clinic does not offer any services.");
+            } else {
+                for (Service service : servicesInDB) {
+                    if (selectedClinic.serviceIdList.contains(service.id)) {
+                        servicesOffered.append(service.name);
+                        servicesOffered.append("\n");
+                    }
+                }
+            }
+            servicesView.setText(servicesOffered.toString());
+        } catch (Exception e) {
+            // In case there is a ConcurrentModificationException because the list changes while
+            // we are iterating over it
+            servicesView.setText("Error: Could not determine the list of services offered by this clinic.");
+        }
 
-        // waiting time
+        // compute and display waiting time
+        // this involves updating the waiting list of the selected clinic
         boolean canAddAPatientToWaitingList = computeDisplayWaitingTimeForSelectedClinic();
 
         // set visibility of check-in button according to if clinic is open and has space on
         // waiting list
-        // Note: if patient tries to check in to clinic while they are checked-in with some clinic,
-        // this won't work
-        if (canAddAPatientToWaitingList) {
+        // Note: if patient tries to check in to clinic while they are already checked-in with some
+        // clinic, they won't be able to
+        if (canAddAPatientToWaitingList && canCheckInToSelectedClinic) {
             checkInBtn.setVisibility(View.VISIBLE);
         } else {
             checkInBtn.setVisibility(View.GONE);
@@ -348,6 +396,8 @@ public class ClinicSearchActivity extends AppCompatActivity {
 
     // method to compute and display expected waiting time for selected clinic
     // returns true if and only if a patient can add themselves to waiting list
+    // i.e. returns true if and only if clinic is currently open and there is enough time left
+    // before the closing time to see another patient
     public boolean computeDisplayWaitingTimeForSelectedClinic() {
         // info needed
         String selectedClinicId = selectedClinic.clinicId;
@@ -359,49 +409,356 @@ public class ClinicSearchActivity extends AppCompatActivity {
             // clinic is closed. clear waiting list and return false as patient cannot be added to waiting list
             clinicWaitingTimeView.setText("Clinic closed");
             clearWaitingListOfClinic();
+            canCheckInToSelectedClinic = false;
             return false;
         } else {
             // clinic is open right now, so continue
             LocalTime selectedClinicClosingTime = getSelectedClinicClosingTimeForDay(todayCode);
-
-            if (selectedClinicClosingTime != null && LocalTime.now().isBefore(selectedClinicClosingTime)) {
-                // retrieve and update the waiting list of the selected clinic
-                // and get expected waiting time in minutes
-                LocalTime expectedTimeForLastPatient = updateWaitingListOfClinic(selectedClinicId, selectedClinicClosingTime);
-                if (expectedTimeForLastPatient != null) {
-                    if (expectedTimeForLastPatient.plus(30, ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
-                        // we use 30 minutes here because both the last patient on the list and the
-                        // prospective new patient would need 15 minutes, so both must be able to be seen
-                        // before closing time
-                        // no more patients can be accepted today
-                        clinicWaitingTimeView.setText("Not currently accepting patients");
-                        return false;
-                    } else {
-                        int expectedWaitingTime = getExpectedWaitingTime(expectedTimeForLastPatient);
-                        // display expected waiting time on screen
-                        clinicWaitingTimeView.setText(String.format("%d minutes", expectedWaitingTime));
-                        return true;
-                    }
+            // retrieve and update the waiting list of the selected clinic
+            updateWaitingListOfClinic(selectedClinicId, selectedClinicClosingTime);
+            if (waitingListOfSelectedClinic.isEmpty()) {
+                // no patients in waiting list, so need to check if there is enough time left today
+                // (note that we use 20 minutes here since we will give the patient an expected
+                // appointment time a few minutes from now to allow them time to arrive)
+                if (LocalTime.now().plus(20, ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
+                    // no more time today
+                    clinicWaitingTimeView.setText("Not currently accepting patients");
+                    canCheckInToSelectedClinic = false;
+                    return false;
                 } else {
-                    // no patients in waiting list, so need to check if there is enough time left today
-                    // (note that we use 20 minutes here since we will give the patient an expected
-                    // appointment time 5 minutes from now to allow them time to arrive
-                    if (LocalTime.now().plus(20, ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
-                        // no more time today
-                        clinicWaitingTimeView.setText("Not currently accepting patients");
-                        return false;
+                    // patient can be seen today and expected waiting time is 0 minutes
+                    clinicWaitingTimeView.setText("0 minutes");
+                    canCheckInToSelectedClinic = true;
+                    return true;
+                }
+            } else {
+                // there are patients on the waiting list, so compute the waiting time
+                LocalTime nextAvailableTime = LocalTime.parse(waitingListOfSelectedClinic.get(waitingListOfSelectedClinic.size() -1).expectedAppEndTime);
+                if (nextAvailableTime.plus(15,ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
+                    // no more time left to see patients
+                    clinicWaitingTimeView.setText("Not currently accepting patients");
+                    canCheckInToSelectedClinic = false;
+                    return false;
+                } else {
+                    int expectedWait = (int) LocalTime.now().until(nextAvailableTime,ChronoUnit.MINUTES);
+                    clinicWaitingTimeView.setText(expectedWait + " minutes");
+                    canCheckInToSelectedClinic = true;
+                    return true;
+                }
+            }
+
+            // old version. doesn't seem to work properly
+            /*// retrieve and update the waiting list of the selected clinic
+            LocalTime expectedEndTimeForLastPatient = updateWaitingListOfClinic(selectedClinicId, selectedClinicClosingTime);
+            // compute waiting time
+            if (expectedEndTimeForLastPatient != null) {
+                if (expectedEndTimeForLastPatient.plus(15, ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
+                    // no more patients can be accepted today
+                    clinicWaitingTimeView.setText("Not currently accepting patients");
+                    return false;
+                } else {
+                    // last patient is finished at expectedEndTimeForLastPatient, so next patient
+                    // can be seen at that time. Thus, we must compute time from now until
+                    // expectedEndTimeForLastPatient
+                    int expectedWaitingTime = (int) LocalTime.now().until(expectedEndTimeForLastPatient,ChronoUnit.MINUTES);
+                    // display expected waiting time on screen
+                    clinicWaitingTimeView.setText(String.format("%d minutes", expectedWaitingTime));
+                    return true;
+                }
+            } else {
+                // no patients in waiting list, so need to check if there is enough time left today
+                // (note that we use 20 minutes here since we will give the patient an expected
+                // appointment time a few minutes from now to allow them time to arrive)
+                if (LocalTime.now().plus(20, ChronoUnit.MINUTES).isAfter(selectedClinicClosingTime)) {
+                    // no more time today
+                    clinicWaitingTimeView.setText("Not currently accepting patients");
+                    return false;
+                } else {
+                    // patient can be seen today and expected waiting time is 0 minutes
+                    clinicWaitingTimeView.setText("0 minutes");
+                    return true;
+                }
+            }*/
+        }
+    }
+
+    // Note: old version. There seems to be something wrong with it.
+    // method to update the waiting list for a specified clinic with given closing time
+    // and return the expected appointment end time of the last patient on the waiting list or null
+    // if there are no patients on the waiting list
+    // Note: something to check that the clinic is actually open at the moment is in the method that
+    // calls this one, so closingTime should not be null (but we double-check anyway)
+    /*public LocalTime updateWaitingListOfClinic(String clinicId, LocalTime closingTime) {
+        try {
+            // retrieve waiting list from database, but do not clear it
+            getWaitingListFromDB(clinicId, false);
+            // get current date and time
+            LocalDate today = LocalDate.now();
+            int todayCode = today.getDayOfWeek().getValue();
+            LocalTime currentTime = LocalTime.now();
+
+            // last patient's appointment must end before closing time
+            // we remove all waiting list entries where the expected appointment END time is in the
+            // past
+            if (closingTime != null) {
+
+                // list of ids of patients that were removed from the waiting list
+                List<String> removedFromWaitingList = new ArrayList<>();
+
+                // remove outdated entries from the waiting list
+                for (Iterator<WaitEntry> waitEntryIterator = waitingListOfSelectedClinic.iterator(); waitEntryIterator.hasNext();) {
+                    WaitEntry entry = waitEntryIterator.next();
+                    if (entry.hasValidDatesTimes()) {
+                        if (!LocalDate.parse(entry.expectedAppDate).isEqual(today)) {
+                            // the patient was on the waiting list for a day other than today, so remove entry
+                            removedFromWaitingList.add(entry.patientId);
+                            // remove last entry returned by iterator next() method
+                            waitEntryIterator.remove();
+                        } else {
+                            // if expected appointment date is today, must check the time
+                            if (LocalTime.parse(entry.expectedAppEndTime).isBefore(LocalTime.now()) ||
+                                    LocalTime.parse(entry.expectedAppEndTime).isAfter(closingTime)) {
+                                // the patient has been seen at some earlier time today or expected
+                                // appointment time ends after the last time a patient can be seen,
+                                // so remove entry
+                                removedFromWaitingList.add(entry.patientId);
+                                // remove last entry returned by iterator next() method
+                                waitEntryIterator.remove();
+                            }
+                        }
                     } else {
-                        // patient can be seen today and expected waiting time is 0 minutes
-                        clinicWaitingTimeView.setText("0 minutes");
-                        return true;
+                        // the waiting list entry does not have valid dates and/or times, so remove it
+                        removedFromWaitingList.add(entry.patientId);
+                        waitEntryIterator.remove();
+                    }
+                }
+
+                LocalTime returnTime;
+
+                if (waitingListOfSelectedClinic.isEmpty()) {
+                    // the waiting list is now empty
+                    // return null
+                    returnTime = null;
+
+                    // update waiting list in database (there is no more waiting list, so just remove it)
+                    DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(clinicId);
+                    // remove old waiting list
+                    waitingListOfClinicRef.removeValue();
+                } else {
+                    // sort the remaining entries in the waiting list in order of date and time requested
+                    WaitEntryComparator waitEntryComparator = new WaitEntryComparator();
+                    waitingListOfSelectedClinic.sort(waitEntryComparator);
+
+                    // find expected appointment end time of first entry in list
+                    // all the other expected times will be set accordingly, counting a default of
+                    // 15 minutes per patient
+                    LocalTime firstEndTime = LocalTime.parse(waitingListOfSelectedClinic.get(0).expectedAppEndTime);
+
+                    // the first patient on the waiting list should either be currently being seen
+                    // or should be seen within a minute or two from now. Otherwise, some other patient(s)
+                    // that used to be on the waiting list before the patient that is currently
+                    // first cancelled their appointment. In this case, we need to update
+                    // the time of the first patient so that they can be seen immediately
+                    // (it is not possible that some other patient is currently being seen as
+                    // otherwise their waiting list entry would still be on the list because their
+                    // expected appointment end time would not yet have passed)
+                    if (LocalTime.now().plus(18, ChronoUnit.MINUTES).isBefore(firstEndTime)) {
+                        // we need to update expected times for first patient in waiting list
+                        // by default, they will be seen 2 minutes from now
+                        LocalTime newStartTime = LocalTime.now().plus(2,ChronoUnit.MINUTES);
+                        LocalTime newEndTime = newStartTime.plus(15,ChronoUnit.MINUTES);
+                        waitingListOfSelectedClinic.get(0).setExpectedAppTimes(newStartTime.toString(),newEndTime.toString());
+
+                        // reset firstEndTime
+                        firstEndTime = newEndTime;
+                    }
+
+
+                    // time at which last patient is expected to be finished
+                    LocalTime lastEndTime = firstEndTime;
+                    for (int i = 0; i < waitingListOfSelectedClinic.size() - 1; i++) {
+                        // the next appointment in the list starts when the previous one ends
+                        LocalTime newEndTime = lastEndTime.plus(15, ChronoUnit.MINUTES);
+                        waitingListOfSelectedClinic.get(i + 1).setExpectedAppTimes(lastEndTime.toString(),newEndTime.toString());
+                        lastEndTime = newEndTime;
+                    }
+
+                    // return expected time for last patient to be seen
+                    returnTime = lastEndTime;
+
+                    // update waiting list in database
+                    DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(clinicId);
+                    // remove old waiting list
+                    waitingListOfClinicRef.removeValue();
+                    // add updated waiting list
+                    for (WaitEntry entry : waitingListOfSelectedClinic) {
+                        waitingListOfClinicRef.child(entry.entryId).setValue(entry);
+                    }
+                }
+
+                // update status of patients whose WaitEntries were removed
+                for (String removedId : removedFromWaitingList) {
+                    mReference.child(DBHelper.waitingListByPatient).child(removedId).setValue(DBHelper.noClinicMsg);
+                }
+                return returnTime;
+            } else {
+                // selected clinic is not open today
+                Toast.makeText(getApplicationContext(),
+                        "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId + " as the clinic is closed today.",
+                        Toast.LENGTH_LONG).show();
+                return null;
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId,
+                    Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }*/
+
+    // method to update the waiting list for a specified clinic with given closing time
+    // and return the expected appointment end time of the last patient on the waiting list or null
+    // if there are no patients on the waiting list
+    // Note: something to check that the clinic is actually open at the moment is in the method that
+    // calls this one, so closingTime should not be null (but we double-check anyway)
+    // Note: New version. this works as intended.
+    public void updateWaitingListOfClinic(String clinicId, LocalTime closingTime) {
+        try {
+            // retrieve waiting list from database, but do not clear it
+            getWaitingListFromDB(clinicId, false);
+            // get current date and time
+            LocalDate today = LocalDate.now();
+            int todayCode = today.getDayOfWeek().getValue();
+            LocalTime currentTime = LocalTime.now();
+
+            // last patient's appointment must end before closing time
+            // we remove all waiting list entries where the expected appointment END time is in the
+            // past
+            if (closingTime != null) {
+
+                // list of entries to be removed from the waiting list
+                List<WaitEntry> removedEntries = new ArrayList<>();
+
+                // remove outdated entries from the waiting list
+                for (WaitEntry entry : waitingListOfSelectedClinic) {
+                    if (entry.hasValidDatesTimes()) {
+                        if (!LocalDate.parse(entry.expectedAppDate).isEqual(today)) {
+                            // the patient was on the waiting list for a day other than today, so remove entry
+                            removedEntries.add(entry);
+                        } else {
+                            // if expected appointment date is today, must check the time
+                            if (LocalTime.parse(entry.expectedAppEndTime).isBefore(LocalTime.now()) ||
+                                    LocalTime.parse(entry.expectedAppEndTime).isAfter(closingTime)) {
+                                // the patient has been seen at some earlier time today or expected
+                                // appointment time ends after the last time a patient can be seen,
+                                // so remove entry
+                                removedEntries.add(entry);
+                            }
+                        }
+                    } /*else {
+                        // the waiting list entry does not have valid dates and/or times, so remove it
+                        removedEntries.add(entry);
+                    }*/
+                }
+
+                // remove the removed entries from the waitingListOfSelectedClinic
+                if (!removedEntries.isEmpty()) {
+                    waitingListOfSelectedClinic.removeAll(removedEntries);
+
+                    // sort the remaining entries in the waiting list in order of date and time requested
+                    WaitEntryComparator waitEntryComparator = new WaitEntryComparator();
+                    waitingListOfSelectedClinic.sort(waitEntryComparator);
+
+                    // find expected appointment end time of first entry in list
+                    // all the other expected times will be set accordingly, counting a default of
+                    // 15 minutes per patient
+                    LocalTime firstEndTime = LocalTime.parse(waitingListOfSelectedClinic.get(0).expectedAppEndTime);
+
+                    // the first patient on the waiting list should either be currently being seen
+                    // or should be seen within a minute or two from now. Otherwise, some other patient(s)
+                    // that used to be on the waiting list before the patient that is currently
+                    // first cancelled their appointment. In this case, we need to update
+                    // the time of the first patient so that they can be seen immediately
+                    // (it is not possible that some other patient is currently being seen as
+                    // otherwise their waiting list entry would still be on the list because their
+                    // expected appointment end time would not yet have passed)
+                    if (LocalTime.now().plus(20, ChronoUnit.MINUTES).isBefore(firstEndTime)) {
+                        // we need to update expected times for first patient in waiting list
+                        // by default, they will be seen 2 minutes from now
+                        LocalTime newStartTime = LocalTime.now().plus(2, ChronoUnit.MINUTES);
+                        LocalTime newEndTime = newStartTime.plus(15, ChronoUnit.MINUTES);
+                        waitingListOfSelectedClinic.get(0).setExpectedAppTimes(newStartTime.toString(), newEndTime.toString());
+
+                        // reset firstEndTime
+                        firstEndTime = newEndTime;
+                    }
+
+                    // time at which last patient is expected to be finished
+                    LocalTime lastEndTime = firstEndTime;
+                    for (int i = 0; i < waitingListOfSelectedClinic.size() - 1; i++) {
+                        // the next appointment in the list starts when the previous one ends
+                        LocalTime newEndTime = lastEndTime.plus(15, ChronoUnit.MINUTES);
+                        waitingListOfSelectedClinic.get(i + 1).setExpectedAppTimes(lastEndTime.toString(), newEndTime.toString());
+                        lastEndTime = newEndTime;
+                    }
+
+                    // update waiting list in database
+                    DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(clinicId);
+
+                    // add updated waiting list
+                    for (WaitEntry entry : waitingListOfSelectedClinic) {
+                        waitingListOfClinicRef.child(entry.entryId).setValue(entry);
+                    }
+
+                    // remove old waiting list entries
+                    for (WaitEntry removedEntry : removedEntries) {
+                        waitingListOfClinicRef.child(removedEntry.entryId).removeValue();
+                        mReference.child(DBHelper.waitingListByPatient).child(removedEntry.patientId).setValue(DBHelper.noClinicMsg);
                     }
                 }
             } else {
-                // the selected clinic is closed right now
-                clinicWaitingTimeView.setText("Not currently accepting patients");
-                return false;
+                // selected clinic is not open today
+                Toast.makeText(getApplicationContext(),
+                        "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId + " as the clinic is closed today.",
+                        Toast.LENGTH_LONG).show();
+                canCheckInToSelectedClinic = false;
             }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId,
+                    Toast.LENGTH_LONG).show();
         }
+    }
+
+    // method to retrieve waiting list for a given clinic from the database
+    public void getWaitingListFromDB(final String clinicId, final boolean clear) {
+        waitingListOfSelectedClinic.clear();
+        mReference.child(DBHelper.waitingListByClinic).child(clinicId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            WaitEntry waitEntry = snapshot.getValue(WaitEntry.class);
+                            if (waitEntry != null) {
+                                waitingListOfSelectedClinic.add(waitEntry);
+                            }
+                        }
+                        if (clear) {
+                            // we want to clear (empty) the waiting list
+                            for (WaitEntry entry : waitingListOfSelectedClinic) {
+                                // set waitingListOfPatient value to "None" in database
+                                mReference.child(DBHelper.waitingListByPatient).child(entry.patientId).setValue(DBHelper.noClinicMsg);
+                            }
+                            // remove entire waiting list of given clinic from database
+                            mReference.child(DBHelper.waitingListByClinic).child(clinicId).removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     // method to clear all entries from waiting list of patient
@@ -410,43 +767,6 @@ public class ClinicSearchActivity extends AppCompatActivity {
         getWaitingListFromDB(selectedClinic.clinicId,true);
     }
 
-    // method to compute waiting time. Returns -1 if waiting list is full or
-    // clinic is closed
-    public int computeWaitingTime(LocalTime lastPatientTime, LocalTime closingTime) {
-        if (closingTime != null && LocalTime.now().isBefore(closingTime)) {
-            if (lastPatientTime != null) {
-                if (lastPatientTime.plus(30,ChronoUnit.MINUTES).isAfter(closingTime)) {
-                    // waiting list full
-                    return -1;
-                } else {
-                    // there is space
-                    return (int) LocalTime.now().until(lastPatientTime.plus(15,ChronoUnit.MINUTES),ChronoUnit.MINUTES);
-                }
-            } else {
-                // nobody on waiting list, check that there is time left
-                // (note that we use 20 minutes here since we will give the patient an expected
-                // appointment time 5 minutes from now to allow them time to arrive
-                if (LocalTime.now().plus(20,ChronoUnit.MINUTES).isAfter(closingTime)) {
-                    // no more time today
-                    return -1;
-                } else {
-                    // patient can go in immediately (although we will give appointment time 5
-                    // minutes after current time)
-                    return 0;
-                }
-            }
-        } else {
-            // clinic is closed right now
-            return -1;
-        }
-    }
-
-    // method to clear search fields
-    public void clearSearchFields() {
-        citySearchEdit.setText("");
-        provinceSearchEdit.setText("");
-        serviceSearchEdit.setText("");
-    }
 
     // onClick Method for the currently open clinics search buttons
     public void onSearchOpenClinicsClick(View view) {
@@ -471,11 +791,97 @@ public class ClinicSearchActivity extends AppCompatActivity {
         }
     }
 
+    // onClick Method for the search by service button
+    public void onSearchByServiceOfferedClick(View view) {
+        showSelectServiceDialog();
+    }
+
+    // method to display a dialog that has all the services in the database. The patient can select
+    // whichever one they want, so that they can then see all of the clinics that offer this service
+    // The method redirects to the method that shows the clinics matching the search if a service is
+    // selected
+    public void showSelectServiceDialog() {
+        // Create dialog with appropriate layout
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.search_results_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        // Declare variables for elements in the dialog
+        final TextView resultCountMsgView = dialogView.findViewById(R.id.searchResultsCountMsg);
+        final TextView resultsActionMsgView = dialogView.findViewById(R.id.searchResultsActionMsg);
+        final RecyclerView resultsRecycler = dialogView.findViewById(R.id.searchResultsRecycler);
+        final EditText resultsPwdEdit = dialogView.findViewById(R.id.searchResultsPwdEdit);
+        final Button resultsCancelBtn = dialogView.findViewById(R.id.searchResultsCancelBtn);
+
+        // Hide irrelevant fields
+        resultsPwdEdit.setVisibility(View.GONE);
+
+        // Set up recycler view to show all available services, provided there are some in the DB
+        if (servicesInDB.isEmpty()) {
+            resultCountMsgView.setText("There are no available services to choose from.");
+            resultsActionMsgView.setVisibility(View.GONE);
+            resultsRecycler.setVisibility(View.GONE);
+            // Make dialog appear
+            final AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
+
+            // Cancel button onClick listener
+            resultsCancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // simply close the dialog
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            resultCountMsgView.setText(String.format("%d services match your search.", servicesInDB.size()));
+            resultsActionMsgView.setText("Select the desired service below to search for clinics offering this service.");
+            RecyclerView.LayoutManager searchResultsLayoutManager = new LinearLayoutManager(this);
+            resultsRecycler.setLayoutManager(searchResultsLayoutManager);
+            // Make dialog appear
+            final AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
+            // set up service adapter
+            ServiceAdapter serviceAdapter = new ServiceAdapter(selectServiceVersion, new ServiceAdapter.OnServiceClickListener() {
+                @Override
+                public void onServiceClick(Service service) {
+                    String serviceIdToSearch = service.id;
+                    dialog.dismiss();
+                    List<Clinic> matchingClinics = searchClinicsByServiceId(serviceIdToSearch);
+                    showClinicSearchResultsDialog(matchingClinics);
+                }
+            });
+            // attach adapter to the recycler
+            resultsRecycler.setAdapter(serviceAdapter);
+            // give adapter list of services to display
+            serviceAdapter.submitList(servicesInDB);
+
+            // Cancel button onClick listener
+            resultsCancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // simply close the dialog
+                    dialog.dismiss();
+                }
+            });
+        }
+    }
+
+    // method to clear search fields
+    public void clearSearchFields() {
+        citySearchEdit.setText("");
+        provinceSearchEdit.setText("");
+    }
+
     // onClick method for the new search button
     public void newSearchOnClick(View view){
         // Note: not sure if clearing search result views is necessary
+        canCheckInToSelectedClinic = false; // no more clinic selected
+        selectedClinic = null;
         // hide search result views
         searchResultGroup.setVisibility(View.GONE);
+        checkInBtn.setVisibility(View.GONE);
         // show search fields
         searchFieldsGroup.setVisibility(View.VISIBLE);
     }
@@ -487,21 +893,25 @@ public class ClinicSearchActivity extends AppCompatActivity {
 
     // onClick method for the check-in button
     public void checkInBtnOnClick(View view) {
-        // update waiting list and waiting time before adding patient and double-check if patient
-        // can be added to waiting list
-        boolean canAddPatientToWaitingList = computeDisplayWaitingTimeForSelectedClinic();
-        if (canAddPatientToWaitingList) {
-            addPatientToWaitingListOfSelectedClinic();
+        String currentClinicId = currentWaitingListClinicId;
+        // check that patient is not already on a waiting list
+        if (currentClinicId != null && !currentClinicId.equals(DBHelper.noClinicMsg)) {
+            // patient cannot be on waiting list twice
+            Toast.makeText(getApplicationContext(), "Error: You are already on the waiting list for a clinic.", Toast.LENGTH_LONG).show();
         } else {
-            // patient could not be added to waiting list
-            Toast.makeText(getApplicationContext(), "Error: cannot check-in remotely for this clinic.", Toast.LENGTH_LONG).show();
+            if (canCheckInToSelectedClinic) {
+                addPatientToWaitingListOfSelectedClinic();
+            } else {
+                Toast.makeText(getApplicationContext(), "Error: Clinic is not currently accepting patients.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     // method to add patient to waiting list of selected clinic
     // should only be called if we are actually allowed to add a patient to the waiting list
     // and after we have updated the waiting list of the selected clinic
-    // note: if patient is currently checked-in at a different clinic, this won't work
+    // note: if patient is currently checked-in at a different clinic, the patient won't be allowed
+    // to add themselves to the waiting list of the selected clinic
     public void addPatientToWaitingListOfSelectedClinic() {
         try {
             String relevantClinicId = selectedClinic.clinicId;
@@ -511,6 +921,8 @@ public class ClinicSearchActivity extends AppCompatActivity {
             if (currentClinicId != null && !currentClinicId.equals(DBHelper.noClinicMsg)) {
                 // patient cannot be on waiting list twice
                 Toast.makeText(getApplicationContext(), "Error: You are already on the waiting list for a clinic.", Toast.LENGTH_LONG).show();
+            } else if (!canCheckInToSelectedClinic) {
+                Toast.makeText(getApplicationContext(), "Error: This clinic is not accepting patients at the moment.", Toast.LENGTH_LONG).show();
             } else {
                 // get id for WaitEntry object
                 DatabaseReference selectedWaitingListRef = mReference.child(DBHelper.waitingListByClinic)
@@ -521,15 +933,17 @@ public class ClinicSearchActivity extends AppCompatActivity {
                     WaitEntry entry = new WaitEntry(entryId, relevantPatientId, relevantClinicId, LocalDate.now().toString(), LocalTime.now().toString());
                     // set expected appointment time
                     if (waitingListOfSelectedClinic.isEmpty()) {
-                        // if no patients currently in waiting list, we set the expected time to be 5 minutes
+                        // if no patients currently in waiting list, we set the expected time to be 2 minutes
                         // from now
                         entry.setExpectedAppDate(LocalDate.now().toString());
-                        entry.setExpectedAppTime(LocalTime.now().plus(5, ChronoUnit.MINUTES).toString());
+                        entry.setExpectedAppStartTime(LocalTime.now().plus(2, ChronoUnit.MINUTES).toString());
                     } else {
-                        LocalTime lastPatientTime = LocalTime.parse(waitingListOfSelectedClinic.get(waitingListOfSelectedClinic.size() - 1).expectedAppTime);
-                        String expectedTime = lastPatientTime.plus(15, ChronoUnit.MINUTES).toString();
+                        // there is at least one patient already on waiting list
+                        LocalTime lastPatientEndTime = LocalTime.parse(waitingListOfSelectedClinic.get(waitingListOfSelectedClinic.size() - 1).expectedAppEndTime);
+                        // patient to be added will be seen when last patient on list finishes
+                        String expectedStartTime = lastPatientEndTime.toString();
                         entry.setExpectedAppDate(LocalDate.now().toString());
-                        entry.setExpectedAppTime(expectedTime);
+                        entry.setExpectedAppStartTime(expectedStartTime);
                     }
                     // add to database
                     selectedWaitingListRef.child(entryId).setValue(entry);
@@ -548,37 +962,6 @@ public class ClinicSearchActivity extends AppCompatActivity {
 
     }
 
-    // method to retrieve waiting list for a given clinic from the database
-    public void getWaitingListFromDB(final String clinicId, final boolean clear) {
-        waitingListOfSelectedClinic.clear();
-        mReference.child(DBHelper.waitingListByClinic).child(clinicId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    WaitEntry waitEntry = snapshot.getValue(WaitEntry.class);
-                    if (waitEntry != null) {
-                        waitingListOfSelectedClinic.add(waitEntry);
-                    }
-                }
-                if (clear) {
-                    // we want to clear (empty) the waiting list
-                    for (WaitEntry entry : waitingListOfSelectedClinic) {
-                        // set waitingListOfPatient value to "None" in database
-                        mReference.child(DBHelper.waitingListByPatient).child(entry.patientId).setValue(DBHelper.noClinicMsg);
-                    }
-                    // remove entire waiting list of given clinic from database
-                    mReference.child(DBHelper.waitingListByClinic).child(clinicId).removeValue();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     // returns closing time of the selected clinic
     public LocalTime getSelectedClinicClosingTimeForDay(int dayCode) {
         String closingTime = selectedClinic.getOpenTimeForDay(dayCode).CT;
@@ -587,111 +970,5 @@ public class ClinicSearchActivity extends AppCompatActivity {
         } else {
             return null;
         }
-    }
-
-    // method to update the waiting list for a specified clinic with given closing time
-    // and return the expected appointment time of the last patient on the waiting list or null
-    // if there are no patients on the waiting list
-    // Note: something to check that the clinic is actually open at the moment is in the method that calls this one
-    public LocalTime updateWaitingListOfClinic(String clinicId, LocalTime closingTime) {
-        try {
-            // retrieve waiting list from database, but do not clear it
-            getWaitingListFromDB(clinicId, false);
-            // get current date and time
-            LocalDate today = LocalDate.now();
-            int todayCode = today.getDayOfWeek().getValue();
-            LocalTime currentTime = LocalTime.now();
-
-            // last patient must be seen 15 minutes before closing time
-            LocalTime maxTime = closingTime.minus(15,ChronoUnit.MINUTES);
-            if (maxTime != null) {
-
-                // list of ids of patients that were removed from the waiting list
-                List<String> removedFromWaitingList = new ArrayList<>();
-
-                // remove outdated entries from the waiting list
-                for (Iterator<WaitEntry> waitEntryIterator = waitingListOfSelectedClinic.iterator(); waitEntryIterator.hasNext();) {
-                    WaitEntry entry = waitEntryIterator.next();
-                    if (entry.hasValidDatesTimes()) {
-                        if (!LocalDate.parse(entry.expectedAppDate).isEqual(today)) {
-                            // the patient was on the waiting list for a day other than today, so remove entry
-                            removedFromWaitingList.add(entry.patientId);
-                            // remove last entry returned by iterator next() method
-                            waitEntryIterator.remove();
-                        } else {
-                            // if expected appointment date is today, must check the time
-                            if (LocalTime.parse(entry.expectedAppTime).isBefore(currentTime) || LocalTime.parse(entry.expectedAppTime).isAfter(maxTime)) {
-                                // the patient has been seen at some earlier time today or expected
-                                // appointment time is after the last time a patient can be seen,
-                                // so remove entry
-                                removedFromWaitingList.add(entry.patientId);
-                                // remove last entry returned by iterator next() method
-                                waitEntryIterator.remove();
-                            }
-                        }
-                    }
-                }
-
-                if (waitingListOfSelectedClinic.isEmpty()) {
-                    // the waiting list is now empty
-                    // return null
-                    return null;
-                } else {
-                    // sort the remaining entries in the waiting list in order of date and time requested
-                    WaitEntryComparator waitEntryComparator = new WaitEntryComparator();
-                    waitingListOfSelectedClinic.sort(waitEntryComparator);
-
-                    // find expected appointment time of first entry in list and set all the other expected
-                    // times accordingly, counting a default of 15 minutes per patient
-                    LocalTime startTime = LocalTime.parse(waitingListOfSelectedClinic.get(0).expectedAppTime);
-                    // time at which last patient is expected to be seen
-                    LocalTime lastTime = startTime;
-                    for (int i = 1; i < waitingListOfSelectedClinic.size(); i++) {
-                        // number of minutes to add to startTime
-                        int addedMinutes = i * 15;
-                        LocalTime newTime = startTime.plus(addedMinutes, ChronoUnit.MINUTES);
-                        waitingListOfSelectedClinic.get(i).setExpectedAppTime(newTime.toString());
-                        lastTime = newTime;
-                    }
-
-                    // update waiting list in database
-                    // update waiting list in database
-                    DatabaseReference waitingListOfClinicRef = mReference.child(DBHelper.waitingListByClinic).child(clinicId);
-                    // remove old waiting list
-                    waitingListOfClinicRef.removeValue();
-                    // add updated waiting list
-                    for (WaitEntry entry : waitingListOfSelectedClinic) {
-                        waitingListOfClinicRef.child(entry.entryId).setValue(entry);
-                    }
-
-                    // update status of patients whose WaitEntries were removed
-                    for (String removedId : removedFromWaitingList) {
-                        mReference.child(DBHelper.waitingListByPatient).child(removedId).setValue(DBHelper.noClinicMsg);
-                    }
-
-                    // return expected time for last patient to be seen
-                    return lastTime;
-                }
-            } else {
-                // selected clinic is not open today
-                Toast.makeText(getApplicationContext(),
-                        "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId + " as the clinic is closed today.",
-                        Toast.LENGTH_LONG).show();
-                return null;
-            }
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(),
-                    "An error occurred while attempting to update the waiting list for the clinic with id " + clinicId,
-                    Toast.LENGTH_LONG).show();
-            return null;
-        }
-    }
-
-    // method to compute waiting time, given the time at which the last patient currently in the
-    // waiting list is expected to be seen
-    public int getExpectedWaitingTime(LocalTime lastTime) {
-        // last patient is seen at lastTime, so next patient can be seen 15 minutes after that
-        LocalTime nextPatientTime = lastTime.plus(15,ChronoUnit.MINUTES);
-        return (int) LocalTime.now().until(nextPatientTime,ChronoUnit.MINUTES);
     }
 }
